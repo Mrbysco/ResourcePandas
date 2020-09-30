@@ -1,0 +1,10 @@
+{
+  "id": "emerald_panda",
+  "inputs": [
+    "tag:forge:storage_blocks/emerald"
+  ],
+  "output": "tag:forge:gems/emerald",
+  "hexColor": "#17dd62",
+  "chance": 0.08,
+  "alpha": 1.0
+}

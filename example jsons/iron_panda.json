@@ -1,0 +1,10 @@
+{
+  "id": "iron_panda",
+  "inputs": [
+    "tag:forge:storage_blocks/iron"
+  ],
+  "output": "tag:forge:nuggets/iron",
+  "hexColor": "#d9dfe7",
+  "chance": 0.6,
+  "alpha": 1.0
+}

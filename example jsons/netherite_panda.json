@@ -1,0 +1,10 @@
+{
+  "id": "netherite_panda",
+  "inputs": [
+    "tag:forge:storage_blocks/netherite"
+  ],
+  "output": "minecraft:netherite_scrap",
+  "hexColor": "#4c4143",
+  "chance": 0.06,
+  "alpha": 1.0
+}

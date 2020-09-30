@@ -1,0 +1,15 @@
+modLoader="javafml"
+loaderVersion="[34,)"
+issueTrackerURL="https://github.com/Mrbysco/ResourcePandas/issues"
+license="MIT"
+
+[[mods]]
+modId="resourcepandas"
+version="${file.jarVersion}"
+displayName="Resource Panda's"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/resource-pandas"
+authors="Mrbysco, Drullkus"
+credits="Drullkus for the idea"
+description='''
+A snotty goldmine
+'''
