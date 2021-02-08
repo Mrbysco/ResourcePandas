@@ -3,8 +3,9 @@ package com.mrbysco.resourcepandas.resource;
 import com.mrbysco.resourcepandas.ResourcePandas;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.ITagCollectionSupplier;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -44,10 +45,11 @@ public class ResourceStorage{
     public static List<ItemStack> getStacksFromString(String input) {
         final List<ItemStack> items = new ArrayList<>();
         final String[] parts = input.split(":");
+        ITagCollectionSupplier tagCollection = TagCollectionManager.getManager();
         if (parts.length > 0) {
             if(parts[0].equalsIgnoreCase("tag") && parts.length == 3) {
                 final ResourceLocation tagLocation = new ResourceLocation(parts[1], parts[2]);
-                Tag<Item> tagContents = (Tag<Item>) ItemTags.getCollection().get(tagLocation);
+                Tag<Item> tagContents = (Tag<Item>) tagCollection.getItemTags().get(tagLocation);
                 if(tagContents != null) {
                     List<Item> itemList = tagContents.getAllElements();
                     if(!itemList.isEmpty()) {
@@ -109,17 +111,17 @@ public class ResourceStorage{
         boolean foundErrors = false;
         if (this.inputs.isEmpty()) {
             foundErrors = true;
-            ResourcePandas.LOGGER.error(this.id + "errored. No valid inputs.");
+            ResourcePandas.LOGGER.error(this.id + " errored. No valid inputs.");
         }
 
         if (this.output == null || this.output.isEmpty()) {
             foundErrors = true;
-            ResourcePandas.LOGGER.error(this.id + "errored. No valid output.");
+            ResourcePandas.LOGGER.error(this.id + " errored. No valid output.");
         }
 
         if (this.hex.isEmpty()) {
             foundErrors = true;
-            ResourcePandas.LOGGER.error(this.id + "errored. No valid hex.");
+            ResourcePandas.LOGGER.error(this.id + " errored. No valid hex.");
         }
 
         return foundErrors;

@@ -26,7 +26,8 @@ public class ResourceRegistry {
 
     public static final ResourceStorage MISSING = new ResourceStorage(new ResourceEntry("missing", new String[]{"minecraft:egg"}, "minecraft:egg", "#ffd79a", 2.0F));
 
-    public static void constructEntries () {
+    public static void constructEntries() {
+        RESOURCE_STORAGE.clear();
         for (final ResourceEntry entry : RESOURCE_ENTRIES.values()) {
             try {
                 final ResourceStorage storage = new ResourceStorage(entry);
@@ -40,7 +41,7 @@ public class ResourceRegistry {
         }
     }
 
-    public static void loadResourceEntries () {
+    public static void loadResourceEntries() {
         if (!JSON_DIR.exists()) {
             JSON_DIR.mkdirs();
 
@@ -65,6 +66,7 @@ public class ResourceRegistry {
             }
             return;
         }
+        RESOURCE_ENTRIES.clear();
         for (final File file : JSON_DIR.listFiles()) {
             final String fileName = file.getName();
             if (fileName.endsWith(".json")) {

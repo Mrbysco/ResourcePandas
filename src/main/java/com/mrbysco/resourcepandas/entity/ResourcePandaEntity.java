@@ -103,7 +103,6 @@ public class ResourcePandaEntity extends PandaEntity {
     public void tick() {
         if (!this.world.isRemote && this.isAlive() && !this.isAIDisabled()) {
             if (!this.isTransformed()) {
-                System.out.println("hey");
                 --this.resourceTransformationTime;
                 if (this.resourceTransformationTime < 0) {
                     this.onTransformed();
