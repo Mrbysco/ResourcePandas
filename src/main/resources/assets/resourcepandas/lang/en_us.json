@@ -2,5 +2,7 @@
   "_comment": "Creative Tab Name",
   "itemGroup.resourcepandas:spawn_eggs": "Resource Pandas",
 
-  "item.resourcepandas.resource_panda_spawn_egg": "Resource Panda Spawn Egg"
+  "item.resourcepandas.resource_panda_spawn_egg": "Resource Panda Spawn Egg",
+
+  "entity.resourcepandas.resource_panda": "Resource Panda"
 }

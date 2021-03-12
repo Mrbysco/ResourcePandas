@@ -98,10 +98,9 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-	
-    compile fg.deobf("mezz.jei:jei-1.16.4:${version_jei}"){
-        transitive = false
-    }
+
+    compileOnly fg.deobf("mezz.jei:jei-1.16.4:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.16.4:${jei_version}")
 	
     compile fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:${crafttweaker_version}")
 }

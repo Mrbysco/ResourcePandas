@@ -7,6 +7,9 @@ public class ResourceEntry {
     private String id = "id";
 
     @Expose
+    private String name = "name";
+
+    @Expose
     private String[] inputs = new String[] { "mod:item:amount", "tag:tagname" };
 
     @Expose
@@ -21,17 +24,36 @@ public class ResourceEntry {
     @Expose
     private float alpha = 1.0F;
 
-    public ResourceEntry(String id, String[] input, String output, String hex, float chance) {
+    public ResourceEntry(String id, String name, String[] input, String output, String hex, float chance) {
         this.id = id;
+        this.name = name;
         this.inputs = input;
         this.output = output;
         this.hexColor = hex;
         this.chance = chance;
     }
 
+    public ResourceEntry(String id, String name, String input, String output, String hex, float chance) {
+        this.id = id;
+        this.name = name;
+        this.inputs = new String[] {input};
+        this.output = output;
+        this.hexColor = hex;
+        this.chance = chance;
+    }
+
+    public ResourceEntry(String id, String[] input, String output, String hex, float chance) {
+        this.id = id;
+        this.name = id;
+        this.inputs = input;
+        this.output = output;
+        this.hexColor = hex;
+        this.chance = chance;
+    }
 
     public ResourceEntry(String id, String input, String output, String hex, float chance) {
         this.id = id;
+        this.name = id;
         this.inputs = new String[] {input};
         this.output = output;
         this.hexColor = hex;
@@ -40,6 +62,10 @@ public class ResourceEntry {
 
     public String getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String[] getInputs() {

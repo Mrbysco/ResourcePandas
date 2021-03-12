@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class ResourceRegistry {
+    private static ResourceRegistry INSTANCE;
     private static final Random rand = new Random();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final File JSON_DIR = new File(FMLPaths.CONFIGDIR.get().toFile() + "/resourcepandas");
@@ -26,7 +27,18 @@ public class ResourceRegistry {
 
     public static final ResourceStorage MISSING = new ResourceStorage(new ResourceEntry("missing", new String[]{"minecraft:egg"}, "minecraft:egg", "#ffd79a", 2.0F));
 
-    public static void constructEntries() {
+    public static ResourceRegistry instance() {
+        if (INSTANCE == null)
+            INSTANCE = new ResourceRegistry();
+        return INSTANCE;
+    }
+
+    public void reloadResources() {
+        constructEntries();
+        loadResourceEntries();
+    }
+
+    public void constructEntries() {
         RESOURCE_STORAGE.clear();
         for (final ResourceEntry entry : RESOURCE_ENTRIES.values()) {
             try {
@@ -41,20 +53,20 @@ public class ResourceRegistry {
         }
     }
 
-    public static void loadResourceEntries() {
+    public void loadResourceEntries() {
         if (!JSON_DIR.exists()) {
             JSON_DIR.mkdirs();
 
             List<ResourceEntry> entries = new ArrayList<>();
-            entries.add(new ResourceEntry("iron_panda", "tag:forge:storage_blocks/iron", "tag:forge:nuggets/iron", "#d9dfe7", 0.6F));
-            entries.add(new ResourceEntry("gold_panda", "tag:forge:storage_blocks/gold", "tag:forge:nuggets/gold", "#f8d26a", 0.5F));
-            entries.add(new ResourceEntry("redstone_panda", "tag:forge:storage_blocks/redstone", "tag:forge:dusts/redstone", "#aa0f01", 0.6F));
-            entries.add(new ResourceEntry("lapis_panda", "tag:forge:storage_blocks/lapis", "tag:forge:gems/lapis", "#345ec3", 0.6F));
-            entries.add(new ResourceEntry("quartz_panda", "tag:forge:storage_blocks/quartz", "tag:forge:gems/quartz", "#ddd4c6", 0.6F));
-            entries.add(new ResourceEntry("coal_panda", "tag:forge:storage_blocks/coal", "minecraft:coal", "#363636", 0.6F));
-            entries.add(new ResourceEntry("diamond_panda", "tag:forge:storage_blocks/diamond", "tag:forge:gems/diamond", "#a1fbe8", 0.11F));
-            entries.add(new ResourceEntry("emerald_panda", "tag:forge:storage_blocks/emerald", "tag:forge:gems/emerald", "#17dd62", 0.08F));
-            entries.add(new ResourceEntry("netherite_panda", "tag:forge:storage_blocks/netherite", "minecraft:netherite_scrap", "#4c4143", 0.06F));
+            entries.add(new ResourceEntry("iron_panda", "Iron", "tag:forge:storage_blocks/iron", "tag:forge:nuggets/iron", "#d9dfe7", 0.6F));
+            entries.add(new ResourceEntry("gold_panda", "Gold", "tag:forge:storage_blocks/gold", "tag:forge:nuggets/gold", "#f8d26a", 0.5F));
+            entries.add(new ResourceEntry("redstone_panda", "Redstone", "tag:forge:storage_blocks/redstone", "tag:forge:dusts/redstone", "#aa0f01", 0.6F));
+            entries.add(new ResourceEntry("lapis_panda", "Lapis", "tag:forge:storage_blocks/lapis", "tag:forge:gems/lapis", "#345ec3", 0.6F));
+            entries.add(new ResourceEntry("quartz_panda", "Quartz", "tag:forge:storage_blocks/quartz", "tag:forge:gems/quartz", "#ddd4c6", 0.6F));
+            entries.add(new ResourceEntry("coal_panda", "Coal", "tag:forge:storage_blocks/coal", "minecraft:coal", "#363636", 0.6F));
+            entries.add(new ResourceEntry("diamond_panda", "Diamond", "tag:forge:storage_blocks/diamond", "tag:forge:gems/diamond", "#a1fbe8", 0.11F));
+            entries.add(new ResourceEntry("emerald_panda", "Emerald", "tag:forge:storage_blocks/emerald", "tag:forge:gems/emerald", "#17dd62", 0.08F));
+            entries.add(new ResourceEntry("netherite_panda", "Netherite", "tag:forge:storage_blocks/netherite", "minecraft:netherite_scrap", "#4c4143", 0.06F));
 
             for(ResourceEntry entry : entries) {
                 try(FileWriter writer = new FileWriter(new File(JSON_DIR, entry.getId() + ".json"))) {

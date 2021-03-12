@@ -10,11 +10,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class PandaReloadManager implements IResourceManagerReloadListener {
 	@Override
 	public void onResourceManagerReload(IResourceManager resourceManager) {
-		ResourceRegistry.loadResourceEntries();
-		ResourceRegistry.constructEntries();
+		ResourceRegistry.instance().reloadResources();
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onAddReloadListeners(AddReloadListenerEvent event) {
 		event.addListener(this);
 	}

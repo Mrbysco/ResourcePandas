@@ -14,6 +14,7 @@ import java.util.List;
 
 public class ResourceStorage{
     private final String id;
+    private final String name;
     private final float chance;
 
     private final float red;
@@ -27,6 +28,7 @@ public class ResourceStorage{
 
     public ResourceStorage(ResourceEntry entry) {
         this.id = entry.getId();
+        this.name = entry.getName();
         this.chance = entry.getChance();
 
         this.hex = entry.getHexColor();
@@ -73,6 +75,10 @@ public class ResourceStorage{
 
     public String getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public List<ItemStack> getInputs() {

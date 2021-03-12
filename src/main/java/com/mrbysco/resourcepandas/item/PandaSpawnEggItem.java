@@ -149,7 +149,7 @@ public class PandaSpawnEggItem extends Item {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         CompoundNBT tag = stack.hasTag() ? stack.getTag() : new CompoundNBT();
         if (tag != null && !tag.getString("resourceType").isEmpty()) {
-            tooltip.add(new StringTextComponent("Resource: ").mergeStyle(TextFormatting.YELLOW).append(new StringTextComponent(tag.getString("resourceType")).mergeStyle(TextFormatting.GOLD)));
+            tooltip.add(new StringTextComponent("Resource: ").mergeStyle(TextFormatting.YELLOW).appendSibling(new StringTextComponent(tag.getString("resourceType")).mergeStyle(TextFormatting.GOLD)));
         }
     }
 }

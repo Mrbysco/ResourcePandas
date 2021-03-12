@@ -20,6 +20,8 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IServerWorld;
@@ -51,6 +53,11 @@ public class ResourcePandaEntity extends PandaEntity {
         super.registerData();
         this.dataManager.register(RESOURCE_VARIANT, "");
         this.dataManager.register(TRANSFORMED, false);
+    }
+
+    @Override
+    public ITextComponent getName() {
+        return !this.hasCustomName() ? new StringTextComponent(String.format("%s ", this.getResourceEntry().getName())).appendSibling(super.getName()) : super.getName();
     }
 
     public String getResourceVariant() {
