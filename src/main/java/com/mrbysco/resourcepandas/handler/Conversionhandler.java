@@ -7,14 +7,14 @@ import com.mrbysco.resourcepandas.recipe.PandaRecipes;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
 import com.mrbysco.resourcepandas.util.InventoryHelper;
 import com.mrbysco.resourcepandas.util.SingularInventory;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.PandaEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.world.World;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Panda;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -22,7 +22,7 @@ public class Conversionhandler {
 
     @SubscribeEvent
     public void interactEvent(PlayerInteractEvent.EntityInteractSpecific event) {
-        World world = event.getWorld();
+        Level world = event.getWorld();
         if(!world.isClientSide()) {
             ItemStack heldStack = event.getItemStack();
             Entity target = event.getTarget();
@@ -31,13 +31,14 @@ public class Conversionhandler {
                 PandaRecipe recipe = world.getRecipeManager().getRecipeFor(PandaRecipes.PANDA_RECIPE_TYPE, inventory, world).orElse(null);
                 if(recipe != null) {
                     ResourcePandas.LOGGER.info(recipe.getId());
-                    ResourcePandaEntity resourcePanda = ((PandaEntity)target).convertTo(PandaRegistry.RESOURCE_PANDA.get(), true);
+                    ResourcePandaEntity resourcePanda = ((Panda)target).convertTo(PandaRegistry.RESOURCE_PANDA.get(), true);
                     if(resourcePanda != null) {
                         resourcePanda.setResourceVariant(recipe.getId().toString());
+                        resourcePanda.checkValues(recipe);
                         resourcePanda.startTransforming(300);
-                        world.playSound((PlayerEntity)null, event.getPos(), SoundEvents.PANDA_EAT, SoundCategory.NEUTRAL, 0.5F + 0.5F * (float)resourcePanda.getRandom().nextInt(2), (resourcePanda.getRandom().nextFloat() - resourcePanda.getRandom().nextFloat()) * 0.2F + 1.0F);
+                        world.playSound((Player)null, event.getPos(), SoundEvents.PANDA_EAT, SoundSource.NEUTRAL, 0.5F + 0.5F * (float)resourcePanda.getRandom().nextInt(2), (resourcePanda.getRandom().nextFloat() - resourcePanda.getRandom().nextFloat()) * 0.2F + 1.0F);
 
-                        if(!event.getPlayer().abilities.instabuild) {
+                        if(!event.getPlayer().getAbilities().instabuild) {
                             heldStack.shrink(1);
                         }
                     }

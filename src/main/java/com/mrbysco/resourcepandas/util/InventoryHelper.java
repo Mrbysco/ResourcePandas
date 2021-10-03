@@ -1,6 +1,6 @@
 package com.mrbysco.resourcepandas.util;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public class InventoryHelper {
 	public static SingularInventory createSingularInventory(ItemStack stack) {

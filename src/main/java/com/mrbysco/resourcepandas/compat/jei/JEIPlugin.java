@@ -16,9 +16,9 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -54,7 +54,7 @@ public class JEIPlugin implements IModPlugin {
 	public void registerRecipes(IRecipeRegistration registration) {
 		ErrorUtil.checkNotNull(pandaCategory, "pandaCategory");
 
-		ClientWorld world = Objects.requireNonNull(Minecraft.getInstance().level);
+		ClientLevel world = Objects.requireNonNull(Minecraft.getInstance().level);
 		registration.addRecipes(world.getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE), PANDAS);
 	}
 

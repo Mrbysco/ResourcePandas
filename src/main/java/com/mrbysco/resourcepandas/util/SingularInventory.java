@@ -1,12 +1,12 @@
 package com.mrbysco.resourcepandas.util;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.NonNullList;
 
-public class SingularInventory  implements IInventory {
+public class SingularInventory  implements Container {
 	private final NonNullList<ItemStack> itemStacks = NonNullList.withSize(1, ItemStack.EMPTY);
 
 	@Override
@@ -31,12 +31,12 @@ public class SingularInventory  implements IInventory {
 
 	@Override
 	public ItemStack removeItem(int index, int count) {
-		return ItemStackHelper.takeItem(this.itemStacks, 0);
+		return ContainerHelper.takeItem(this.itemStacks, 0);
 	}
 
 	@Override
 	public ItemStack removeItemNoUpdate(int index) {
-		return ItemStackHelper.takeItem(this.itemStacks, 0);
+		return ContainerHelper.takeItem(this.itemStacks, 0);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class SingularInventory  implements IInventory {
 	}
 
 	@Override
-	public boolean stillValid(PlayerEntity player) {
+	public boolean stillValid(Player player) {
 		return true;
 	}
 

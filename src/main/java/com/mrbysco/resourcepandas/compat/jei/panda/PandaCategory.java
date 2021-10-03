@@ -1,6 +1,6 @@
 package com.mrbysco.resourcepandas.compat.jei.panda;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrbysco.resourcepandas.Reference;
 import com.mrbysco.resourcepandas.compat.jei.JEIPlugin;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
@@ -15,15 +15,14 @@ import mezz.jei.api.gui.ingredient.ITooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -58,8 +57,8 @@ public class PandaCategory implements IRecipeCategory<PandaRecipe> {
 	}
 
 	@Override
-	public String getTitle() {
-		return I18n.get("resourcepandas.pandas.title");
+	public Component getTitle() {
+		return new TranslatableComponent("resourcepandas.pandas.title");
 	}
 
 	@Override
@@ -89,18 +88,17 @@ public class PandaCategory implements IRecipeCategory<PandaRecipe> {
 		recipeLayout.getItemStacks().addTooltipCallback(new ITooltipCallback<ItemStack>() {
 			@OnlyIn(Dist.CLIENT)
 			@Override
-			public void onTooltip(int slot, boolean input, ItemStack stack, List<ITextComponent> list) {
+			public void onTooltip(int slot, boolean input, ItemStack stack, List<Component> list) {
 				if(!input && slot == 1) {
-					System.out.println(recipe.getChance());
-					list.add(new StringTextComponent((int)(100 * recipe.getChance()) + "")
-							.append(new TranslationTextComponent("resourcepandas.gui.jei.pandas.tooltip")).withStyle(TextFormatting.YELLOW));
+					list.add(new TextComponent((int)(100 * recipe.getChance()) + "")
+							.append(new TranslatableComponent("resourcepandas.gui.jei.pandas.tooltip")).withStyle(ChatFormatting.YELLOW));
 				}
 			}
 		});
 	}
 
 	@Override
-	public void draw(PandaRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+	public void draw(PandaRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
 		// Draw Drops
 		this.slotDrawable.draw(matrixStack, X_FIRST_ITEM, Y_ITEM_DISTANCE);
 		this.slotDrawable.draw(matrixStack, X_OUTPUT_ITEM, Y_ITEM_DISTANCE);
@@ -117,7 +115,7 @@ public class PandaCategory implements IRecipeCategory<PandaRecipe> {
 		// Draw entity name
 		matrixStack.pushPose();
 		matrixStack.translate(1, 0, 0);
-		FontRenderer font = Minecraft.getInstance().font;
+		Font font = Minecraft.getInstance().font;
 		String text = recipe.getName();
 		if(font.width(text) > 122) {
 			matrixStack.scale(0.75F, 0.75F, 0.75F);

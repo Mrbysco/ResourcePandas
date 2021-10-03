@@ -1,33 +1,33 @@
 package com.mrbysco.resourcepandas.client.renderer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.IEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.client.renderer.entity.model.EntityModel;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.resources.ResourceLocation;
 
-public class ResourceLayer<T extends ResourcePandaEntity, M extends EntityModel<T>> extends LayerRenderer<T, M> {
+public class ResourceLayer<T extends ResourcePandaEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
     private final ResourceLocation overlayLocation;
 
-    public ResourceLayer(IEntityRenderer<T, M> entityRendererIn, ResourceLocation overlay) {
+    public ResourceLayer(RenderLayerParent<T, M> entityRendererIn, ResourceLocation overlay) {
         super(entityRendererIn);
         this.overlayLocation = overlay;
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T resourcePanda, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T resourcePanda, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         if(resourcePanda.isTransformed() && resourcePanda.hasResourceVariant()) {
             EntityModel<T> entityModel = this.getParentModel();
             entityModel.prepareMobModel(resourcePanda, limbSwing, limbSwingAmount, partialTicks);
             this.getParentModel().copyPropertiesTo(entityModel);
-            IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RenderType.entityCutoutNoCull(this.overlayLocation));
+            VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderType.entityCutoutNoCull(this.overlayLocation));
             entityModel.setupAnim(resourcePanda, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
             String hexColor = resourcePanda.getHexColor();
 
@@ -40,8 +40,8 @@ public class ResourceLayer<T extends ResourcePandaEntity, M extends EntityModel<
                 int k = i % j;
                 int l = (i + 1) % j;
                 float f3 = ((float)(resourcePanda.tickCount % 25) + partialTicks) / 25.0F;
-                float[] afloat1 = SheepEntity.getColorArray(DyeColor.byId(k));
-                float[] afloat2 = SheepEntity.getColorArray(DyeColor.byId(l));
+                float[] afloat1 = Sheep.getColorArray(DyeColor.byId(k));
+                float[] afloat2 = Sheep.getColorArray(DyeColor.byId(l));
                 red = afloat1[0] * (1.0F - f3) + afloat2[0] * f3;
                 green = afloat1[1] * (1.0F - f3) + afloat2[1] * f3;
                 blue = afloat1[2] * (1.0F - f3) + afloat2[2] * f3;

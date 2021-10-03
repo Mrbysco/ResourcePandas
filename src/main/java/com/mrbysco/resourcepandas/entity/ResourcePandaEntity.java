@@ -4,53 +4,54 @@ import com.mrbysco.resourcepandas.Reference;
 import com.mrbysco.resourcepandas.recipe.PandaRecipe;
 import com.mrbysco.resourcepandas.recipe.PandaRecipes;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ILivingEntityData;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.passive.PandaEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.animal.Panda;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ResourcePandaEntity extends PandaEntity {
+public class ResourcePandaEntity extends Panda {
     private static final PandaRecipe MISSING_RECIPE = new PandaRecipe(new ResourceLocation(Reference.MOD_ID, "missing"), "Missing",  Ingredient.of(Items.EGG), new ItemStack(Items.EGG), "#ffd79a", 1.0F, 2.0F);
 
-    private static final DataParameter<String> RESOURCE_VARIANT = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.STRING);
-    private static final DataParameter<String> RESOURCE_COLOR = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.STRING);
-    private static final DataParameter<Float> RESOURCE_ALPHA = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Boolean> TRANSFORMED = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<String> RESOURCE_VARIANT = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<String> RESOURCE_COLOR = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Float> RESOURCE_ALPHA = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<String> RESOURCE_NAME = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Boolean> TRANSFORMED = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.BOOLEAN);
     private int resourceTransformationTime;
 
-    public ResourcePandaEntity(EntityType<? extends ResourcePandaEntity> type, World worldIn) {
+    public ResourcePandaEntity(EntityType<? extends ResourcePandaEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 
-    public static AttributeModifierMap.MutableAttribute genAttributeMap() {
-        return PandaEntity.createAttributes();
+    public static AttributeSupplier.Builder genAttributeMap() {
+        return Panda.createAttributes();
     }
 
     @Override
@@ -65,18 +66,19 @@ public class ResourcePandaEntity extends PandaEntity {
         this.entityData.define(RESOURCE_VARIANT, "");
         this.entityData.define(RESOURCE_COLOR, "#FFFFFF");
         this.entityData.define(RESOURCE_ALPHA, 1.0F);
+        this.entityData.define(RESOURCE_NAME, "");
         this.entityData.define(TRANSFORMED, false);
     }
 
     @Override
-    public ITextComponent getName() {
-        return !this.hasCustomName() ? new StringTextComponent(String.format("%s ", this.getPandaRecipe().getName())).append(super.getName()) : super.getName();
+    public Component getName() {
+        return !this.hasCustomName() ? new TextComponent(String.format("%s ", this.getResourceName())).append(super.getName()) : super.getName();
     }
 
     @Override
-    public ItemStack getPickedResult(RayTraceResult target) {
+    public ItemStack getPickedResult(HitResult target) {
         ItemStack stack = new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());
-        CompoundNBT compoundNBT = stack.getOrCreateTag();
+        CompoundTag compoundNBT = stack.getOrCreateTag();
         compoundNBT.putString("resourceType", getResourceVariant().toString());
         compoundNBT.putInt("primaryColor", Integer.decode("0x" + getPandaRecipe().getHexColor().replaceFirst("#", "")));
         stack.setTag(compoundNBT);
@@ -99,6 +101,7 @@ public class ResourcePandaEntity extends PandaEntity {
 
     public void setResourceVariant(String variant) {
         this.entityData.set(RESOURCE_VARIANT, variant);
+        refresh();
     }
 
     public String getHexColor() {
@@ -121,6 +124,14 @@ public class ResourcePandaEntity extends PandaEntity {
         return this.entityData.get(TRANSFORMED);
     }
 
+    public String getResourceName() {
+        return this.entityData.get(RESOURCE_NAME);
+    }
+
+    public void setResourceName(String name) {
+        this.entityData.set(RESOURCE_NAME, name);
+    }
+
     public void setTransformed(Boolean transformed) {
         this.entityData.set(TRANSFORMED, transformed);
     }
@@ -137,7 +148,7 @@ public class ResourcePandaEntity extends PandaEntity {
         this.setHiddenGene(Gene.WEAK);
 
         if (!this.isSilent()) {
-            this.level.levelEvent((PlayerEntity)null, 1040, this.blockPosition(), 0);
+            this.level.levelEvent((Player)null, 1040, this.blockPosition(), 0);
         }
     }
 
@@ -169,18 +180,20 @@ public class ResourcePandaEntity extends PandaEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putString("ResourceVariant", this.getResourceVariant().toString());
+        compound.putString("ResourceName", this.getResourceName());
         compound.putString("ResourceHex", this.getHexColor());
         compound.putFloat("ResourceAlpha", this.getAlpha());
         compound.putBoolean("Transformed", this.isTransformed());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.setResourceVariant(compound.getString("ResourceVariant"));
+        this.setResourceName(compound.getString("ResourceName"));
         this.setHexcolor(compound.getString("ResourceHex"));
         this.setAlpha(compound.getFloat("ResourceAlpha"));
         this.setTransformed(compound.getBoolean("Transformed"));
@@ -189,64 +202,85 @@ public class ResourcePandaEntity extends PandaEntity {
     public PandaRecipe getPandaRecipe() {
         List<PandaRecipe> recipes = getCommandSenderWorld().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE);
         for(PandaRecipe recipe : recipes) {
-            if(recipe.getId() == getResourceVariant()) {
+            if(recipe.getId().equals(getResourceVariant())) {
                 return recipe;
             }
         }
+        checkValues(MISSING_RECIPE);
         return MISSING_RECIPE;
+    }
+
+    public void refresh() {
+        List<PandaRecipe> recipes = getCommandSenderWorld().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE);
+        for(PandaRecipe recipe : recipes) {
+            if(recipe.getId().equals(getResourceVariant())) {
+                checkValues(recipe);
+                break;
+            }
+        }
+    }
+
+    public void checkValues(PandaRecipe recipe) {
+        if(!getResourceName().equals(recipe.getName()))
+            setResourceName(recipe.getName());
+        if(!getHexColor().equals(recipe.getHexColor()))
+            setHexcolor(recipe.getHexColor());
+        if(getAlpha() != recipe.getAlpha())
+            setAlpha(recipe.getAlpha());
     }
 
     @Override
     public void afterSneeze() {
-        Vector3d vector3d = this.getDeltaMovement();
-        this.level.addParticle(ParticleTypes.SNEEZE, this.getX() - (double)(this.getBbWidth() + 1.0F) * 0.5D * (double) MathHelper.sin(this.yBodyRot * ((float)Math.PI / 180F)), this.getEyeY() - (double)0.1F, this.getZ() + (double)(this.getBbWidth() + 1.0F) * 0.5D * (double)MathHelper.cos(this.yBodyRot * ((float)Math.PI / 180F)), vector3d.x, 0.0D, vector3d.z);
+        Vec3 vector3d = this.getDeltaMovement();
+        this.level.addParticle(ParticleTypes.SNEEZE, this.getX() - (double)(this.getBbWidth() + 1.0F) * 0.5D * (double) Mth.sin(this.yBodyRot * ((float)Math.PI / 180F)), this.getEyeY() - (double)0.1F, this.getZ() + (double)(this.getBbWidth() + 1.0F) * 0.5D * (double)Mth.cos(this.yBodyRot * ((float)Math.PI / 180F)), vector3d.x, 0.0D, vector3d.z);
         this.playSound(SoundEvents.PANDA_SNEEZE, 1.0F, 1.0F);
 
-        for(PandaEntity pandaentity : this.level.getEntitiesOfClass(PandaEntity.class, this.getBoundingBox().inflate(10.0D))) {
+        for(Panda pandaentity : this.level.getEntitiesOfClass(Panda.class, this.getBoundingBox().inflate(10.0D))) {
             if (!pandaentity.isBaby() && pandaentity.isOnGround() && !pandaentity.isInWater() && pandaentity.canPerformAction()) {
                 jump(pandaentity);
             }
         }
 
         if (!this.level.isClientSide() && this.random.nextFloat() <= getPandaRecipe().getChance() && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-            this.spawnAtLocation(getPandaRecipe().getResultItem());
+            PandaRecipe recipe = getPandaRecipe();
+            this.spawnAtLocation(recipe.getResultItem());
         }
     }
 
-    public void jump(PandaEntity pandaentity) {
+    public void jump(Panda pandaentity) {
         float f = 0.42F * getJumpFactor(pandaentity);
-        if (pandaentity.hasEffect(Effects.JUMP)) {
-            f += 0.1F * (float)(pandaentity.getEffect(Effects.JUMP).getAmplifier() + 1);
+        if (pandaentity.hasEffect(MobEffects.JUMP)) {
+            f += 0.1F * (float)(pandaentity.getEffect(MobEffects.JUMP).getAmplifier() + 1);
         }
 
-        Vector3d vector3d = pandaentity.getDeltaMovement();
+        Vec3 vector3d = pandaentity.getDeltaMovement();
         pandaentity.setDeltaMovement(vector3d.x, (double)f, vector3d.z);
         if (pandaentity.isSprinting()) {
-            float f1 = pandaentity.yRot * ((float)Math.PI / 180F);
-            pandaentity.setDeltaMovement(pandaentity.getDeltaMovement().add((double)(-MathHelper.sin(f1) * 0.2F), 0.0D, (double)(MathHelper.cos(f1) * 0.2F)));
+            float f1 = pandaentity.getYRot() * ((float)Math.PI / 180F);
+            pandaentity.setDeltaMovement(pandaentity.getDeltaMovement().add((double)(-Mth.sin(f1) * 0.2F), 0.0D, (double)(Mth.cos(f1) * 0.2F)));
         }
 
         pandaentity.hasImpulse = true;
         net.minecraftforge.common.ForgeHooks.onLivingJump(pandaentity);
     }
 
-    protected float getJumpFactor(PandaEntity pandaentity) {
+    protected float getJumpFactor(Panda pandaentity) {
         float f = pandaentity.level.getBlockState(pandaentity.blockPosition()).getBlock().getJumpFactor();
         float f1 = pandaentity.level.getBlockState(getPositionUnderneath(pandaentity)).getBlock().getJumpFactor();
         return (double)f == 1.0D ? f1 : f;
     }
 
-    protected BlockPos getPositionUnderneath(PandaEntity pandaentity) {
+    protected BlockPos getPositionUnderneath(Panda pandaentity) {
         return new BlockPos(pandaentity.position().x, pandaentity.getBoundingBox().minY - 0.5000001D, pandaentity.position().z);
     }
 
     @Nullable
     @Override
-    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        ILivingEntityData entityData = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
+        SpawnGroupData entityData = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
         this.setMainGene(Gene.WEAK);
         this.setHiddenGene(Gene.WEAK);
-        if(reason == SpawnReason.SPAWN_EGG || reason == SpawnReason.SPAWNER) {
+        if(reason == MobSpawnType.SPAWN_EGG || reason == MobSpawnType.SPAWNER) {
             setTransformed(true);
         } else {
             this.startTransforming(300);

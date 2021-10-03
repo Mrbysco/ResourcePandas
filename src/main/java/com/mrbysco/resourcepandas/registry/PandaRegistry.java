@@ -3,11 +3,11 @@ package com.mrbysco.resourcepandas.registry;
 import com.mrbysco.resourcepandas.Reference;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import com.mrbysco.resourcepandas.item.PandaSpawnEggItem;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.Item;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -16,7 +16,7 @@ public class PandaRegistry {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Reference.MOD_ID);
 
     public static final RegistryObject<EntityType<ResourcePandaEntity>> RESOURCE_PANDA = ENTITIES.register("resource_panda", () ->
-            register("resource_panda", EntityType.Builder.<ResourcePandaEntity>of(ResourcePandaEntity::new, EntityClassification.CREATURE)
+            register("resource_panda", EntityType.Builder.<ResourcePandaEntity>of(ResourcePandaEntity::new, MobCategory.CREATURE)
             .sized(1.3F, 1.25F).clientTrackingRange(10)));
 
     public static final RegistryObject<Item> RESOURCE_PANDA_SPAWN_EGG = ITEMS.register("resource_panda_spawn_egg" , () -> new PandaSpawnEggItem(new Item.Properties().tab(PandaGroups.SPAWN_EGGS)));
