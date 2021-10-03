@@ -45,6 +45,7 @@ public class ResourcePandaEntity extends Panda {
     private static final EntityDataAccessor<String> RESOURCE_NAME = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Boolean> TRANSFORMED = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.BOOLEAN);
     private int resourceTransformationTime;
+    private PandaRecipe cachedRecipe;
 
     public ResourcePandaEntity(EntityType<? extends ResourcePandaEntity> type, Level worldIn) {
         super(type, worldIn);
@@ -200,14 +201,18 @@ public class ResourcePandaEntity extends Panda {
     }
 
     public PandaRecipe getPandaRecipe() {
-        List<PandaRecipe> recipes = getCommandSenderWorld().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE);
-        for(PandaRecipe recipe : recipes) {
-            if(recipe.getId().equals(getResourceVariant())) {
-                return recipe;
+        if(cachedRecipe == null || !cachedRecipe.getId().equals(getResourceVariant())) {
+            List<PandaRecipe> recipes = getCommandSenderWorld().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE);
+            for(PandaRecipe recipe : recipes) {
+                if(recipe.getId().equals(getResourceVariant())) {
+                    checkValues(recipe);
+                    return this.cachedRecipe = recipe;
+                }
             }
+            checkValues(MISSING_RECIPE);
+            return MISSING_RECIPE;
         }
-        checkValues(MISSING_RECIPE);
-        return MISSING_RECIPE;
+        return this.cachedRecipe;
     }
 
     public void refresh() {

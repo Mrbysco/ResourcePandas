@@ -7,7 +7,9 @@ import com.mrbysco.resourcepandas.registry.PandaRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -24,6 +26,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,9 +43,20 @@ import java.util.function.Supplier;
 public class PandaSpawnEggItem extends SpawnEggItem {
     public final Supplier<EntityType<? extends Mob>> entityType;
 
+    private static final DefaultDispenseItemBehavior SPAWN_EGG_BEHAVIOR = new DefaultDispenseItemBehavior() {
+        public ItemStack execute(BlockSource source, ItemStack stack) {
+            Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
+            ((PandaSpawnEggItem) stack.getItem()).getType(stack.getTag()).spawn(source.getLevel(), stack, null,
+                    source.getPos().relative(direction), MobSpawnType.DISPENSER, direction != Direction.UP, false);
+            stack.shrink(1);
+            return stack;
+        }
+    };
+
     public PandaSpawnEggItem(final Properties properties) {
         super(null, 0, 1776418, properties);
         this.entityType = () -> PandaRegistry.RESOURCE_PANDA.get();
+        DispenserBlock.registerBehavior(this, SPAWN_EGG_BEHAVIOR);
     }
 
     public InteractionResult useOn(UseOnContext context) {
