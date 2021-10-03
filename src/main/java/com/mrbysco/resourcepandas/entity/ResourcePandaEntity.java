@@ -40,10 +40,12 @@ public class ResourcePandaEntity extends PandaEntity {
     private static final PandaRecipe MISSING_RECIPE = new PandaRecipe(new ResourceLocation(Reference.MOD_ID, "missing"), "Missing",  Ingredient.of(Items.EGG), new ItemStack(Items.EGG), "#ffd79a", 1.0F, 2.0F);
 
     private static final DataParameter<String> RESOURCE_VARIANT = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> RESOURCE_NAME = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.STRING);
     private static final DataParameter<String> RESOURCE_COLOR = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.STRING);
     private static final DataParameter<Float> RESOURCE_ALPHA = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Boolean> TRANSFORMED = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.BOOLEAN);
     private int resourceTransformationTime;
+    private PandaRecipe cachedRecipe = null;
 
     public ResourcePandaEntity(EntityType<? extends ResourcePandaEntity> type, World worldIn) {
         super(type, worldIn);
@@ -63,6 +65,7 @@ public class ResourcePandaEntity extends PandaEntity {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(RESOURCE_VARIANT, "");
+        this.entityData.define(RESOURCE_NAME, "");
         this.entityData.define(RESOURCE_COLOR, "#FFFFFF");
         this.entityData.define(RESOURCE_ALPHA, 1.0F);
         this.entityData.define(TRANSFORMED, false);
@@ -99,6 +102,15 @@ public class ResourcePandaEntity extends PandaEntity {
 
     public void setResourceVariant(String variant) {
         this.entityData.set(RESOURCE_VARIANT, variant);
+        refresh();
+    }
+
+    public String getResourceName() {
+        return this.entityData.get(RESOURCE_NAME);
+    }
+
+    public void setResourceName(String name) {
+        this.entityData.set(RESOURCE_NAME, name);
     }
 
     public String getHexColor() {
@@ -172,6 +184,7 @@ public class ResourcePandaEntity extends PandaEntity {
     public void addAdditionalSaveData(CompoundNBT compound) {
         super.addAdditionalSaveData(compound);
         compound.putString("ResourceVariant", this.getResourceVariant().toString());
+        compound.putString("ResourceName", this.getResourceName());
         compound.putString("ResourceHex", this.getHexColor());
         compound.putFloat("ResourceAlpha", this.getAlpha());
         compound.putBoolean("Transformed", this.isTransformed());
@@ -181,19 +194,44 @@ public class ResourcePandaEntity extends PandaEntity {
     public void readAdditionalSaveData(CompoundNBT compound) {
         super.readAdditionalSaveData(compound);
         this.setResourceVariant(compound.getString("ResourceVariant"));
+        this.setResourceName(compound.getString("ResourceName"));
         this.setHexcolor(compound.getString("ResourceHex"));
         this.setAlpha(compound.getFloat("ResourceAlpha"));
         this.setTransformed(compound.getBoolean("Transformed"));
     }
 
     public PandaRecipe getPandaRecipe() {
+        if(cachedRecipe == null || !cachedRecipe.getId().equals(getResourceVariant())) {
+            List<PandaRecipe> recipes = getCommandSenderWorld().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE);
+            for(PandaRecipe recipe : recipes) {
+                if(recipe.getId().equals(getResourceVariant())) {
+                    checkValues(recipe);
+                    return this.cachedRecipe = recipe;
+                }
+            }
+            checkValues(MISSING_RECIPE);
+            return MISSING_RECIPE;
+        }
+        return this.cachedRecipe;
+    }
+
+    public void refresh() {
         List<PandaRecipe> recipes = getCommandSenderWorld().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE);
         for(PandaRecipe recipe : recipes) {
-            if(recipe.getId() == getResourceVariant()) {
-                return recipe;
+            if(recipe.getId().equals(getResourceVariant())) {
+                checkValues(recipe);
+                break;
             }
         }
-        return MISSING_RECIPE;
+    }
+
+    public void checkValues(PandaRecipe recipe) {
+        if(!getResourceName().equals(recipe.getName()))
+            setResourceName(recipe.getName());
+        if(!getHexColor().equals(recipe.getHexColor()))
+            setHexcolor(recipe.getHexColor());
+        if(getAlpha() != recipe.getAlpha())
+            setAlpha(recipe.getAlpha());
     }
 
     @Override

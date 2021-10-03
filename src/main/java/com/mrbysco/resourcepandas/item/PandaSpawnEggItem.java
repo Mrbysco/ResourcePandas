@@ -5,15 +5,18 @@ import com.mrbysco.resourcepandas.registry.PandaRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.stats.Stats;
 import net.minecraft.tileentity.MobSpawnerTileEntity;
@@ -37,18 +40,31 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.spawner.AbstractSpawner;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
-import net.minecraft.item.Item.Properties;
-
-public class PandaSpawnEggItem extends Item {
+public class PandaSpawnEggItem extends SpawnEggItem {
+    public final Supplier<EntityType<?>> entityType;
     private final int secondaryColor = 1776418;
 
+    private static final DefaultDispenseItemBehavior SPAWN_EGG_BEHAVIOR = new DefaultDispenseItemBehavior() {
+        public ItemStack execute(IBlockSource source, ItemStack stack) {
+            Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
+            ((PandaSpawnEggItem) stack.getItem()).getType(stack.getTag()).spawn(source.getLevel(), stack, null,
+                    source.getPos().relative(direction), SpawnReason.DISPENSER, direction != Direction.UP, false);
+            stack.shrink(1);
+            return stack;
+        }
+    };
+
     public PandaSpawnEggItem(Properties properties) {
-        super(properties);
+        super(null, 0, 1776418, properties);
+        this.entityType = () -> PandaRegistry.RESOURCE_PANDA.get();
+        DispenserBlock.registerBehavior(this, SPAWN_EGG_BEHAVIOR);
     }
 
     public ActionResultType useOn(ItemUseContext context) {
@@ -97,6 +113,7 @@ public class PandaSpawnEggItem extends Item {
             if(panda != null) {
                 if(tag.contains("resourceType")) {
                     panda.setResourceVariant(tag.getString("resourceType"));
+                    panda.refresh();
                 }
                 stack.shrink(1);
             }
@@ -127,6 +144,7 @@ public class PandaSpawnEggItem extends Item {
                 } else {
                     if(tag.contains("resourceType")) {
                         panda.setResourceVariant(tag.getString("resourceType"));
+                        panda.refresh();
                     }
 
                     if (!player.abilities.instabuild) {
@@ -162,5 +180,17 @@ public class PandaSpawnEggItem extends Item {
                 }
             }
         }
+    }
+
+    @Override
+    public EntityType<?> getType(@Nullable final CompoundNBT nbt) {
+        if (nbt != null && nbt.contains("EntityTag", Constants.NBT.TAG_COMPOUND)) {
+            final CompoundNBT entityTag = nbt.getCompound("EntityTag");
+            if (entityTag.contains("id", Constants.NBT.TAG_STRING)) {
+                return EntityType.byString(entityTag.getString("id")).orElse(entityType.get());
+            }
+        }
+
+        return entityType.get();
     }
 }

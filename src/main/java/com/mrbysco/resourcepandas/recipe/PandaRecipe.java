@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;

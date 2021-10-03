@@ -91,7 +91,6 @@ public class PandaCategory implements IRecipeCategory<PandaRecipe> {
 			@Override
 			public void onTooltip(int slot, boolean input, ItemStack stack, List<ITextComponent> list) {
 				if(!input && slot == 1) {
-					System.out.println(recipe.getChance());
 					list.add(new StringTextComponent((int)(100 * recipe.getChance()) + "")
 							.append(new TranslationTextComponent("resourcepandas.gui.jei.pandas.tooltip")).withStyle(TextFormatting.YELLOW));
 				}

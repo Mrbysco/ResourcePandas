@@ -34,6 +34,7 @@ public class Conversionhandler {
                     ResourcePandaEntity resourcePanda = ((PandaEntity)target).convertTo(PandaRegistry.RESOURCE_PANDA.get(), true);
                     if(resourcePanda != null) {
                         resourcePanda.setResourceVariant(recipe.getId().toString());
+                        resourcePanda.checkValues(recipe);
                         resourcePanda.startTransforming(300);
                         world.playSound((PlayerEntity)null, event.getPos(), SoundEvents.PANDA_EAT, SoundCategory.NEUTRAL, 0.5F + 0.5F * (float)resourcePanda.getRandom().nextInt(2), (resourcePanda.getRandom().nextFloat() - resourcePanda.getRandom().nextFloat()) * 0.2F + 1.0F);
 
