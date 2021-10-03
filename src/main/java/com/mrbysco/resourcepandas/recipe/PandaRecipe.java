@@ -111,17 +111,13 @@ public class PandaRecipe implements IRecipe<IInventory> {
 			Ingredient ingredient = Ingredient.fromJson(jsonelement);
 			//Forge: Check if primitive string to keep vanilla or a object which can contain a count field.
 			ItemStack itemstack;
-			if(jsonObject.has("result")) {
-				if (jsonObject.get("result").isJsonObject()) itemstack = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(jsonObject, "result"));
-				else {
-					String s1 = JSONUtils.getAsString(jsonObject, "result");
-					ResourceLocation resourcelocation = new ResourceLocation(s1);
-					itemstack = new ItemStack(Registry.ITEM.getOptional(resourcelocation).orElseThrow(() -> {
-						return new IllegalStateException("Item: " + s1 + " does not exist");
-					}));
-				}
-			} else {
-				itemstack = new ItemStack(Items.EGG);
+			if (jsonObject.get("result").isJsonObject()) itemstack = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(jsonObject, "result"));
+			else {
+				String s1 = JSONUtils.getAsString(jsonObject, "result");
+				ResourceLocation resourcelocation = new ResourceLocation(s1);
+				itemstack = new ItemStack(Registry.ITEM.getOptional(resourcelocation).orElseThrow(() -> {
+					return new IllegalStateException("Item: " + s1 + " does not exist");
+				}));
 			}
 
 			String hex = JSONUtils.getAsString(jsonObject, "hexColor", "#ffffff");
