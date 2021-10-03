@@ -5,5 +5,7 @@
   "item.resourcepandas.resource_panda_spawn_egg": "Resource Panda Spawn Egg",
 
   "entity.resourcepandas.resource_panda": "Resource Panda",
-  "resourcepandas.pandas.title": "Resource Pandas"
+  "resourcepandas.pandas.title": "Resource Pandas",
+
+  "resourcepandas.gui.jei.pandas.tooltip": "% Chance"
 }

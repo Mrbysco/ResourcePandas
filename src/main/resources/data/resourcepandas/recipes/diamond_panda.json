@@ -1,0 +1,13 @@
+{
+  "type": "resourcepandas:panda_recipe",
+  "name": "Diamond",
+  "ingredient": {
+    "tag": "forge:storage_blocks/diamond"
+  },
+  "hexColor": "#a1fbe8",
+  "alpha": 1.0,
+  "chance": 0.11,
+  "result": {
+    "item": "minecraft:diamond"
+  }
+}

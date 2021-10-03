@@ -1,8 +1,9 @@
 package com.mrbysco.resourcepandas.entity;
 
+import com.mrbysco.resourcepandas.Reference;
+import com.mrbysco.resourcepandas.recipe.PandaRecipe;
+import com.mrbysco.resourcepandas.recipe.PandaRecipes;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
-import com.mrbysco.resourcepandas.resource.ResourceRegistry;
-import com.mrbysco.resourcepandas.resource.ResourceStorage;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.SpawnReason;
@@ -11,12 +12,15 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -30,9 +34,14 @@ import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class ResourcePandaEntity extends PandaEntity {
+    private static final PandaRecipe MISSING_RECIPE = new PandaRecipe(new ResourceLocation(Reference.MOD_ID, "missing"), "Missing",  Ingredient.of(Items.EGG), new ItemStack(Items.EGG), "#ffd79a", 1.0F, 2.0F);
+
     private static final DataParameter<String> RESOURCE_VARIANT = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> RESOURCE_COLOR = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.STRING);
+    private static final DataParameter<Float> RESOURCE_ALPHA = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Boolean> TRANSFORMED = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.BOOLEAN);
     private int resourceTransformationTime;
 
@@ -54,30 +63,58 @@ public class ResourcePandaEntity extends PandaEntity {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(RESOURCE_VARIANT, "");
+        this.entityData.define(RESOURCE_COLOR, "#FFFFFF");
+        this.entityData.define(RESOURCE_ALPHA, 1.0F);
         this.entityData.define(TRANSFORMED, false);
     }
 
     @Override
     public ITextComponent getName() {
-        return !this.hasCustomName() ? new StringTextComponent(String.format("%s ", this.getResourceEntry().getName())).append(super.getName()) : super.getName();
+        return !this.hasCustomName() ? new StringTextComponent(String.format("%s ", this.getPandaRecipe().getName())).append(super.getName()) : super.getName();
     }
 
     @Override
     public ItemStack getPickedResult(RayTraceResult target) {
         ItemStack stack = new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());
         CompoundNBT compoundNBT = stack.getOrCreateTag();
-        compoundNBT.putString("resourceType", getResourceVariant());
-        compoundNBT.putInt("primaryColor", Integer.decode("0x" + getResourceEntry().getHex().replaceFirst("#", "")));
+        compoundNBT.putString("resourceType", getResourceVariant().toString());
+        compoundNBT.putInt("primaryColor", Integer.decode("0x" + getPandaRecipe().getHexColor().replaceFirst("#", "")));
         stack.setTag(compoundNBT);
         return stack;
     }
 
-    public String getResourceVariant() {
-        return this.entityData.get(RESOURCE_VARIANT);
+    public ResourceLocation getResourceVariant() {
+        String variant = this.entityData.get(RESOURCE_VARIANT);
+        if(variant.contains(":")) {
+            return ResourceLocation.tryParse(variant);
+        } else {
+            //Convert old resource panda's
+            setResourceVariant(Reference.MOD_PREFIX +  variant);
+            PandaRecipe recipe = getPandaRecipe();
+            setHexcolor(recipe.getHexColor());
+            setAlpha(recipe.getAlpha());
+            return new ResourceLocation(Reference.MOD_ID, variant);
+        }
     }
 
     public void setResourceVariant(String variant) {
         this.entityData.set(RESOURCE_VARIANT, variant);
+    }
+
+    public String getHexColor() {
+        return this.entityData.get(RESOURCE_COLOR);
+    }
+
+    public void setHexcolor(String hex) {
+        this.entityData.set(RESOURCE_COLOR, hex);
+    }
+
+    public float getAlpha() {
+        return this.entityData.get(RESOURCE_ALPHA);
+    }
+
+    public void setAlpha(float alpha) {
+        this.entityData.set(RESOURCE_ALPHA, alpha);
     }
 
     public boolean isTransformed() {
@@ -105,7 +142,7 @@ public class ResourcePandaEntity extends PandaEntity {
     }
 
     public boolean hasResourceVariant() {
-       return !getResourceVariant().isEmpty();
+       return getResourceVariant() != null;
     }
 
     @Override
@@ -134,7 +171,9 @@ public class ResourcePandaEntity extends PandaEntity {
     @Override
     public void addAdditionalSaveData(CompoundNBT compound) {
         super.addAdditionalSaveData(compound);
-        compound.putString("ResourceVariant", this.getResourceVariant());
+        compound.putString("ResourceVariant", this.getResourceVariant().toString());
+        compound.putString("ResourceHex", this.getHexColor());
+        compound.putFloat("ResourceAlpha", this.getAlpha());
         compound.putBoolean("Transformed", this.isTransformed());
     }
 
@@ -142,11 +181,19 @@ public class ResourcePandaEntity extends PandaEntity {
     public void readAdditionalSaveData(CompoundNBT compound) {
         super.readAdditionalSaveData(compound);
         this.setResourceVariant(compound.getString("ResourceVariant"));
+        this.setHexcolor(compound.getString("ResourceHex"));
+        this.setAlpha(compound.getFloat("ResourceAlpha"));
         this.setTransformed(compound.getBoolean("Transformed"));
     }
 
-    public ResourceStorage getResourceEntry() {
-        return ResourceRegistry.getType(getResourceVariant());
+    public PandaRecipe getPandaRecipe() {
+        List<PandaRecipe> recipes = getCommandSenderWorld().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE);
+        for(PandaRecipe recipe : recipes) {
+            if(recipe.getId() == getResourceVariant()) {
+                return recipe;
+            }
+        }
+        return MISSING_RECIPE;
     }
 
     @Override
@@ -161,8 +208,8 @@ public class ResourcePandaEntity extends PandaEntity {
             }
         }
 
-        if (!this.level.isClientSide() && this.random.nextFloat() <= getResourceEntry().getChance() && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-            this.spawnAtLocation(getResourceEntry().getOutput());
+        if (!this.level.isClientSide() && this.random.nextFloat() <= getPandaRecipe().getChance() && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+            this.spawnAtLocation(getPandaRecipe().getResultItem());
         }
     }
 

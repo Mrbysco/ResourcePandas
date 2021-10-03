@@ -1,0 +1,11 @@
+package com.mrbysco.resourcepandas.util;
+
+import net.minecraft.item.ItemStack;
+
+public class InventoryHelper {
+	public static SingularInventory createSingularInventory(ItemStack stack) {
+		SingularInventory inventory = new SingularInventory();
+		inventory.setItem(0, stack);
+		return inventory;
+	}
+}

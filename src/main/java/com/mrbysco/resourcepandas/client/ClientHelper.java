@@ -1,8 +1,8 @@
 package com.mrbysco.resourcepandas.client;
 
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
+import com.mrbysco.resourcepandas.recipe.PandaRecipe;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
-import com.mrbysco.resourcepandas.resource.ResourceStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
@@ -12,8 +12,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.function.Function;
 
 public class ClientHelper {
-	public static ResourcePandaEntity getResourcePanda(ResourceStorage storage) {
-		if(storage.panda == null) {
+	public static ResourcePandaEntity getResourcePanda(PandaRecipe recipe) {
+		if(recipe.panda == null) {
 			CompoundNBT nbt = new CompoundNBT();
 			nbt.putString("id", ForgeRegistries.ENTITIES.getKey(PandaRegistry.RESOURCE_PANDA.get()).toString());
 			Minecraft mc = Minecraft.getInstance();
@@ -21,12 +21,14 @@ public class ClientHelper {
 			if(world != null) {
 				ResourcePandaEntity resourcePanda = (ResourcePandaEntity) EntityType.loadEntityRecursive(nbt, world, Function.identity());
 				if(resourcePanda != null) {
-					resourcePanda.setResourceVariant(storage.getId());
+					resourcePanda.setResourceVariant(recipe.getId().toString());
+					resourcePanda.setHexcolor(recipe.getHexColor());
+					resourcePanda.setAlpha(recipe.getAlpha());
 					resourcePanda.setTransformed(true);
-					return storage.panda = resourcePanda;
+					return recipe.panda = resourcePanda;
 				}
 			}
 		}
-		return storage.panda;
+		return recipe.panda;
 	}
 }

@@ -1,0 +1,13 @@
+{
+  "type": "resourcepandas:panda_recipe",
+  "name": "Coal",
+  "ingredient": {
+    "tag": "forge:storage_blocks/coal"
+  },
+  "hexColor": "#363636",
+  "alpha": 1.0,
+  "chance": 0.6,
+  "result": {
+    "item": "minecraft:coal"
+  }
+}

@@ -3,17 +3,15 @@ package com.mrbysco.resourcepandas;
 import com.mrbysco.resourcepandas.client.ClientHandler;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import com.mrbysco.resourcepandas.handler.Conversionhandler;
+import com.mrbysco.resourcepandas.recipe.PandaRecipes;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
-import com.mrbysco.resourcepandas.resource.ResourceRegistry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,10 +25,10 @@ public class ResourcePandas {
 
         eventBus.addListener(this::setup);
         MinecraftForge.EVENT_BUS.register(new Conversionhandler());
-        MinecraftForge.EVENT_BUS.register(new PandaReloadManager());
 
         PandaRegistry.ENTITIES.register(eventBus);
         PandaRegistry.ITEMS.register(eventBus);
+        PandaRecipes.RECIPE_SERIALIZERS.register(eventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
         eventBus.addListener(this::registerEntityAttributes);
@@ -47,11 +45,5 @@ public class ResourcePandas {
 
     public void registerEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(PandaRegistry.RESOURCE_PANDA.get(), ResourcePandaEntity.genAttributeMap().build());
-    }
-
-    @SubscribeEvent
-    public void serverStart(FMLServerStartingEvent event) {
-        ResourceRegistry.instance().loadResourceEntries();
-        ResourceRegistry.instance().constructEntries();
     }
 }

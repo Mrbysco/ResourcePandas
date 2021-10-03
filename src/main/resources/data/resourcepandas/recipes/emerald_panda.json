@@ -1,0 +1,13 @@
+{
+  "type": "resourcepandas:panda_recipe",
+  "name": "Emerald",
+  "ingredient": {
+    "tag": "forge:storage_blocks/emerald"
+  },
+  "hexColor": "#17dd62",
+  "chance": 0.08,
+  "alpha": 1.0,
+  "result": {
+    "item": "minecraft:emerald"
+  }
+}

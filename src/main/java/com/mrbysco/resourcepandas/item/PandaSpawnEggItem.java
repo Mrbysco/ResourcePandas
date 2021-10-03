@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -21,6 +22,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedSpawnerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -151,7 +153,14 @@ public class PandaSpawnEggItem extends Item {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         CompoundNBT tag = stack.hasTag() ? stack.getTag() : new CompoundNBT();
         if (tag != null && !tag.getString("resourceType").isEmpty()) {
-            tooltip.add(new StringTextComponent("Resource: ").withStyle(TextFormatting.YELLOW).append(new StringTextComponent(tag.getString("resourceType")).withStyle(TextFormatting.GOLD)));
+            ResourceLocation location = ResourceLocation.tryParse(tag.getString("resourceType"));
+            if(location != null) {
+                if(Screen.hasShiftDown()) {
+                    tooltip.add(new StringTextComponent("Resource: ").withStyle(TextFormatting.YELLOW).append(new StringTextComponent(location.toString()).withStyle(TextFormatting.GOLD)));
+                } else {
+                    tooltip.add(new StringTextComponent("Resource: ").withStyle(TextFormatting.YELLOW).append(new StringTextComponent(location.getPath()).withStyle(TextFormatting.GOLD)));
+                }
+            }
         }
     }
 }
