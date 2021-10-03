@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mrbysco.resourcepandas.ResourcePandas;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.File;
@@ -34,8 +35,8 @@ public class ResourceRegistry {
     }
 
     public void reloadResources() {
-        constructEntries();
         loadResourceEntries();
+        constructEntries();
     }
 
     public void constructEntries() {
@@ -106,8 +107,8 @@ public class ResourceRegistry {
 
     public static ResourceStorage getStorageForItem(ItemStack stack) {
         for(ResourceStorage storage : RESOURCE_STORAGE.values()) {
-            for(ItemStack inputStack : storage.getInputs()) {
-                if(inputStack.isItemEqual(stack)) {
+            for(Ingredient ingredient : storage.getInputs()) {
+                if(ingredient.test(stack)) {
                     return storage;
                 }
             }

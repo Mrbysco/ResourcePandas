@@ -1,5 +1,6 @@
 package com.mrbysco.resourcepandas.entity;
 
+import com.mrbysco.resourcepandas.registry.PandaRegistry;
 import com.mrbysco.resourcepandas.resource.ResourceRegistry;
 import com.mrbysco.resourcepandas.resource.ResourceStorage;
 import net.minecraft.entity.EntityType;
@@ -19,6 +20,7 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -30,8 +32,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 public class ResourcePandaEntity extends PandaEntity {
-    private static final DataParameter<String> RESOURCE_VARIANT = EntityDataManager.createKey(ResourcePandaEntity.class, DataSerializers.STRING);
-    private static final DataParameter<Boolean> TRANSFORMED = EntityDataManager.createKey(ResourcePandaEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<String> RESOURCE_VARIANT = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.STRING);
+    private static final DataParameter<Boolean> TRANSFORMED = EntityDataManager.defineId(ResourcePandaEntity.class, DataSerializers.BOOLEAN);
     private int resourceTransformationTime;
 
     public ResourcePandaEntity(EntityType<? extends ResourcePandaEntity> type, World worldIn) {
@@ -39,7 +41,7 @@ public class ResourcePandaEntity extends PandaEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute genAttributeMap() {
-        return PandaEntity.func_234204_eW_();
+        return PandaEntity.createAttributes();
     }
 
     @Override
@@ -49,31 +51,41 @@ public class ResourcePandaEntity extends PandaEntity {
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(RESOURCE_VARIANT, "");
-        this.dataManager.register(TRANSFORMED, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(RESOURCE_VARIANT, "");
+        this.entityData.define(TRANSFORMED, false);
     }
 
     @Override
     public ITextComponent getName() {
-        return !this.hasCustomName() ? new StringTextComponent(String.format("%s ", this.getResourceEntry().getName())).appendSibling(super.getName()) : super.getName();
+        return !this.hasCustomName() ? new StringTextComponent(String.format("%s ", this.getResourceEntry().getName())).append(super.getName()) : super.getName();
+    }
+
+    @Override
+    public ItemStack getPickedResult(RayTraceResult target) {
+        ItemStack stack = new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());
+        CompoundNBT compoundNBT = stack.getOrCreateTag();
+        compoundNBT.putString("resourceType", getResourceVariant());
+        compoundNBT.putInt("primaryColor", Integer.decode("0x" + getResourceEntry().getHex().replaceFirst("#", "")));
+        stack.setTag(compoundNBT);
+        return stack;
     }
 
     public String getResourceVariant() {
-        return this.dataManager.get(RESOURCE_VARIANT);
+        return this.entityData.get(RESOURCE_VARIANT);
     }
 
     public void setResourceVariant(String variant) {
-        this.dataManager.set(RESOURCE_VARIANT, variant);
+        this.entityData.set(RESOURCE_VARIANT, variant);
     }
 
     public boolean isTransformed() {
-        return this.dataManager.get(TRANSFORMED);
+        return this.entityData.get(TRANSFORMED);
     }
 
     public void setTransformed(Boolean transformed) {
-        this.dataManager.set(TRANSFORMED, transformed);
+        this.entityData.set(TRANSFORMED, transformed);
     }
 
     public void startTransforming(int transformationTime) {
@@ -88,7 +100,7 @@ public class ResourcePandaEntity extends PandaEntity {
         this.setHiddenGene(Gene.WEAK);
 
         if (!this.isSilent()) {
-            this.world.playEvent((PlayerEntity)null, 1040, this.getPosition(), 0);
+            this.level.levelEvent((PlayerEntity)null, 1040, this.blockPosition(), 0);
         }
     }
 
@@ -102,13 +114,13 @@ public class ResourcePandaEntity extends PandaEntity {
     }
 
     @Override
-    public boolean isBreedingItem(ItemStack stack) {
+    public boolean isFood(ItemStack stack) {
         return false;
     }
 
     @Override
     public void tick() {
-        if (!this.world.isRemote && this.isAlive() && !this.isAIDisabled()) {
+        if (!this.level.isClientSide && this.isAlive() && !this.isNoAi()) {
             if (!this.isTransformed()) {
                 --this.resourceTransformationTime;
                 if (this.resourceTransformationTime < 0) {
@@ -120,15 +132,15 @@ public class ResourcePandaEntity extends PandaEntity {
     }
 
     @Override
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         compound.putString("ResourceVariant", this.getResourceVariant());
         compound.putBoolean("Transformed", this.isTransformed());
     }
 
     @Override
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         this.setResourceVariant(compound.getString("ResourceVariant"));
         this.setTransformed(compound.getBoolean("Transformed"));
     }
@@ -138,58 +150,61 @@ public class ResourcePandaEntity extends PandaEntity {
     }
 
     @Override
-    public void func_213577_ez() {
-        Vector3d vector3d = this.getMotion();
-        this.world.addParticle(ParticleTypes.SNEEZE, this.getPosX() - (double)(this.getWidth() + 1.0F) * 0.5D * (double) MathHelper.sin(this.renderYawOffset * ((float)Math.PI / 180F)), this.getPosYEye() - (double)0.1F, this.getPosZ() + (double)(this.getWidth() + 1.0F) * 0.5D * (double)MathHelper.cos(this.renderYawOffset * ((float)Math.PI / 180F)), vector3d.x, 0.0D, vector3d.z);
-        this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0F, 1.0F);
+    public void afterSneeze() {
+        Vector3d vector3d = this.getDeltaMovement();
+        this.level.addParticle(ParticleTypes.SNEEZE, this.getX() - (double)(this.getBbWidth() + 1.0F) * 0.5D * (double) MathHelper.sin(this.yBodyRot * ((float)Math.PI / 180F)), this.getEyeY() - (double)0.1F, this.getZ() + (double)(this.getBbWidth() + 1.0F) * 0.5D * (double)MathHelper.cos(this.yBodyRot * ((float)Math.PI / 180F)), vector3d.x, 0.0D, vector3d.z);
+        this.playSound(SoundEvents.PANDA_SNEEZE, 1.0F, 1.0F);
 
-        for(PandaEntity pandaentity : this.world.getEntitiesWithinAABB(PandaEntity.class, this.getBoundingBox().grow(10.0D))) {
-            if (!pandaentity.isChild() && pandaentity.isOnGround() && !pandaentity.isInWater() && pandaentity.canPerformAction()) {
+        for(PandaEntity pandaentity : this.level.getEntitiesOfClass(PandaEntity.class, this.getBoundingBox().inflate(10.0D))) {
+            if (!pandaentity.isBaby() && pandaentity.isOnGround() && !pandaentity.isInWater() && pandaentity.canPerformAction()) {
                 jump(pandaentity);
             }
         }
 
-        if (!this.world.isRemote() && this.rand.nextFloat() <= getResourceEntry().getChance() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-            this.entityDropItem(getResourceEntry().getOutput());
+        if (!this.level.isClientSide() && this.random.nextFloat() <= getResourceEntry().getChance() && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+            this.spawnAtLocation(getResourceEntry().getOutput());
         }
     }
 
     public void jump(PandaEntity pandaentity) {
         float f = 0.42F * getJumpFactor(pandaentity);
-        if (pandaentity.isPotionActive(Effects.JUMP_BOOST)) {
-            f += 0.1F * (float)(pandaentity.getActivePotionEffect(Effects.JUMP_BOOST).getAmplifier() + 1);
+        if (pandaentity.hasEffect(Effects.JUMP)) {
+            f += 0.1F * (float)(pandaentity.getEffect(Effects.JUMP).getAmplifier() + 1);
         }
 
-        Vector3d vector3d = pandaentity.getMotion();
-        pandaentity.setMotion(vector3d.x, (double)f, vector3d.z);
+        Vector3d vector3d = pandaentity.getDeltaMovement();
+        pandaentity.setDeltaMovement(vector3d.x, (double)f, vector3d.z);
         if (pandaentity.isSprinting()) {
-            float f1 = pandaentity.rotationYaw * ((float)Math.PI / 180F);
-            pandaentity.setMotion(pandaentity.getMotion().add((double)(-MathHelper.sin(f1) * 0.2F), 0.0D, (double)(MathHelper.cos(f1) * 0.2F)));
+            float f1 = pandaentity.yRot * ((float)Math.PI / 180F);
+            pandaentity.setDeltaMovement(pandaentity.getDeltaMovement().add((double)(-MathHelper.sin(f1) * 0.2F), 0.0D, (double)(MathHelper.cos(f1) * 0.2F)));
         }
 
-        pandaentity.isAirBorne = true;
+        pandaentity.hasImpulse = true;
         net.minecraftforge.common.ForgeHooks.onLivingJump(pandaentity);
     }
 
     protected float getJumpFactor(PandaEntity pandaentity) {
-        float f = pandaentity.world.getBlockState(pandaentity.getPosition()).getBlock().getJumpFactor();
-        float f1 = pandaentity.world.getBlockState(getPositionUnderneath(pandaentity)).getBlock().getJumpFactor();
+        float f = pandaentity.level.getBlockState(pandaentity.blockPosition()).getBlock().getJumpFactor();
+        float f1 = pandaentity.level.getBlockState(getPositionUnderneath(pandaentity)).getBlock().getJumpFactor();
         return (double)f == 1.0D ? f1 : f;
     }
 
     protected BlockPos getPositionUnderneath(PandaEntity pandaentity) {
-        return new BlockPos(pandaentity.getPositionVec().x, pandaentity.getBoundingBox().minY - 0.5000001D, pandaentity.getPositionVec().z);
+        return new BlockPos(pandaentity.position().x, pandaentity.getBoundingBox().minY - 0.5000001D, pandaentity.position().z);
     }
 
     @Nullable
     @Override
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        ILivingEntityData entityData = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+        this.setMainGene(Gene.WEAK);
+        this.setHiddenGene(Gene.WEAK);
         if(reason == SpawnReason.SPAWN_EGG || reason == SpawnReason.SPAWNER) {
             setTransformed(true);
         } else {
             this.startTransforming(300);
         }
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+        return entityData;
     }
 
     static class ResourceSneezingGoal extends Goal {
@@ -203,12 +218,12 @@ public class ResourcePandaEntity extends PandaEntity {
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
+        public boolean canUse() {
             if (this.resourcePanda.canPerformAction()) {
-                if (this.resourcePanda.isTransformed() && this.resourcePanda.isWeak() && this.resourcePanda.getRNG().nextInt(500) == 1) {
+                if (this.resourcePanda.isTransformed() && this.resourcePanda.isWeak() && this.resourcePanda.getRandom().nextInt(500) == 1) {
                     return true;
                 } else {
-                    return this.resourcePanda.getRNG().nextInt(6000) == 1;
+                    return this.resourcePanda.getRandom().nextInt(6000) == 1;
                 }
             } else {
                 return false;
@@ -218,15 +233,15 @@ public class ResourcePandaEntity extends PandaEntity {
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return false;
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            this.resourcePanda.func_213581_u(true);
+        public void start() {
+            this.resourcePanda.sneeze(true);
         }
     }
 }

@@ -5,9 +5,9 @@ import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import com.mrbysco.resourcepandas.handler.Conversionhandler;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
 import com.mrbysco.resourcepandas.resource.ResourceRegistry;
-import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -33,15 +33,20 @@ public class ResourcePandas {
         PandaRegistry.ITEMS.register(eventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
+        eventBus.addListener(this::registerEntityAttributes);
 
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             eventBus.addListener(ClientHandler::doClientStuff);
             eventBus.addListener(ClientHandler::registerItemColors);
         });
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-        GlobalEntityTypeAttributes.put(PandaRegistry.RESOURCE_PANDA.get(), ResourcePandaEntity.genAttributeMap().create());
+
+    }
+
+    public void registerEntityAttributes(EntityAttributeCreationEvent event) {
+        event.put(PandaRegistry.RESOURCE_PANDA.get(), ResourcePandaEntity.genAttributeMap().build());
     }
 
     @SubscribeEvent

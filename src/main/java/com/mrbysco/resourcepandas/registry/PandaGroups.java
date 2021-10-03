@@ -13,12 +13,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class PandaGroups {
     public static final ItemGroup SPAWN_EGGS = new ItemGroup(Reference.MOD_PREFIX + "spawn_eggs") {
         @OnlyIn(Dist.CLIENT)
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());
         }
 
         @Override
-        public void fill(NonNullList<ItemStack> items) {
+        public void fillItemList(NonNullList<ItemStack> items) {
             for(ResourceStorage storage : ResourceRegistry.RESOURCE_STORAGE.values()) {
                 ItemStack storageItem = new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());
                 CompoundNBT tag = storageItem.getTag() == null ? new CompoundNBT() : storageItem.getTag();

@@ -15,7 +15,7 @@ public class ResourcePandaRenderer extends PandaRenderer {
     }
 
     @Override
-    protected boolean func_230495_a_(PandaEntity panda) {
+    protected boolean isShaking(PandaEntity panda) {
         return !((ResourcePandaEntity)panda).isTransformed();
     }
 }

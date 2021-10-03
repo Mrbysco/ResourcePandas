@@ -40,6 +40,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
+import net.minecraft.item.Item.Properties;
+
 public class PandaSpawnEggItem extends Item {
     private final int secondaryColor = 1776418;
 
@@ -47,21 +49,21 @@ public class PandaSpawnEggItem extends Item {
         super(properties);
     }
 
-    public ActionResultType onItemUse(ItemUseContext context) {
-        World worldIn = context.getWorld();
-        if (worldIn.isRemote) {
+    public ActionResultType useOn(ItemUseContext context) {
+        World worldIn = context.getLevel();
+        if (worldIn.isClientSide) {
             return ActionResultType.SUCCESS;
         } else {
-            ItemStack stack = context.getItem();
-            BlockPos pos = context.getPos();
-            Direction dir = context.getFace();
+            ItemStack stack = context.getItemInHand();
+            BlockPos pos = context.getClickedPos();
+            Direction dir = context.getClickedFace();
             BlockState state = worldIn.getBlockState(pos);
             Block block = state.getBlock();
             CompoundNBT tag = stack.getTag() == null ? new CompoundNBT() : stack.getTag();
             if (block == Blocks.SPAWNER) {
-                TileEntity tile = worldIn.getTileEntity(pos);
+                TileEntity tile = worldIn.getBlockEntity(pos);
                 if (tile instanceof MobSpawnerTileEntity) {
-                    AbstractSpawner spawner = ((MobSpawnerTileEntity)tile).getSpawnerBaseLogic();
+                    AbstractSpawner spawner = ((MobSpawnerTileEntity)tile).getSpawner();
                     EntityType<ResourcePandaEntity> type = PandaRegistry.RESOURCE_PANDA.get();
                     if(tag.contains("resourceType")) {
                         ResourcePandaEntity panda = type.create(worldIn);
@@ -69,23 +71,23 @@ public class PandaSpawnEggItem extends Item {
                             panda.setResourceVariant(tag.getString("resourceType"));
                             spawner.setNextSpawnData(new WeightedSpawnerEntity(1, panda.serializeNBT()));
                         } else {
-                            spawner.setEntityType(type);
+                            spawner.setEntityId(type);
                         }
                     } else {
-                        spawner.setEntityType(type);
+                        spawner.setEntityId(type);
                     }
-                    tile.markDirty();
-                    worldIn.notifyBlockUpdate(pos, state, state, 3);
+                    tile.setChanged();
+                    worldIn.sendBlockUpdated(pos, state, state, 3);
                     stack.shrink(1);
                     return ActionResultType.SUCCESS;
                 }
             }
 
             BlockPos pos2;
-            if (state.getCollisionShape(worldIn, pos).isEmpty()) {
+            if (state.getBlockSupportShape(worldIn, pos).isEmpty()) {
                 pos2 = pos;
             } else {
-                pos2 = pos.offset(dir);
+                pos2 = pos.relative(dir);
             }
 
             EntityType<ResourcePandaEntity> type = PandaRegistry.RESOURCE_PANDA.get();
@@ -102,38 +104,38 @@ public class PandaSpawnEggItem extends Item {
         }
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity player, Hand handIn) {
-        ItemStack stack = player.getHeldItem(handIn);
-        RayTraceResult traceResult = rayTrace(worldIn, player, FluidMode.SOURCE_ONLY);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity player, Hand handIn) {
+        ItemStack stack = player.getItemInHand(handIn);
+        RayTraceResult traceResult = getPlayerPOVHitResult(worldIn, player, FluidMode.SOURCE_ONLY);
         CompoundNBT tag = stack.getTag() == null ? new CompoundNBT() : stack.getTag();
         if (traceResult.getType() != Type.BLOCK) {
-            return ActionResult.resultPass(stack);
-        } else if (worldIn.isRemote) {
-            return ActionResult.resultSuccess(stack);
+            return ActionResult.pass(stack);
+        } else if (worldIn.isClientSide) {
+            return ActionResult.success(stack);
         } else {
             BlockRayTraceResult blockRayTraceResult = (BlockRayTraceResult)traceResult;
-            BlockPos pos = blockRayTraceResult.getPos();
+            BlockPos pos = blockRayTraceResult.getBlockPos();
             if (!(worldIn.getBlockState(pos).getBlock() instanceof FlowingFluidBlock)) {
-                return ActionResult.resultPass(stack);
-            } else if (worldIn.isBlockModifiable(player, pos) && player.canPlayerEdit(pos, blockRayTraceResult.getFace(), stack)) {
+                return ActionResult.pass(stack);
+            } else if (worldIn.mayInteract(player, pos) && player.mayUseItemAt(pos, blockRayTraceResult.getDirection(), stack)) {
                 EntityType<ResourcePandaEntity> type = PandaRegistry.RESOURCE_PANDA.get();
                 ResourcePandaEntity panda = (ResourcePandaEntity)type.spawn((ServerWorld) worldIn, stack, player, pos, SpawnReason.SPAWN_EGG, false, false);
                 if (panda == null) {
-                    return ActionResult.resultPass(stack);
+                    return ActionResult.pass(stack);
                 } else {
                     if(tag.contains("resourceType")) {
                         panda.setResourceVariant(tag.getString("resourceType"));
                     }
 
-                    if (!player.abilities.isCreativeMode) {
+                    if (!player.abilities.instabuild) {
                         stack.shrink(1);
                     }
 
-                    player.addStat(Stats.ITEM_USED.get(this));
-                    return ActionResult.resultSuccess(stack);
+                    player.awardStat(Stats.ITEM_USED.get(this));
+                    return ActionResult.success(stack);
                 }
             } else {
-                return ActionResult.resultFail(stack);
+                return ActionResult.fail(stack);
             }
         }
     }
@@ -145,11 +147,11 @@ public class PandaSpawnEggItem extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
         CompoundNBT tag = stack.hasTag() ? stack.getTag() : new CompoundNBT();
         if (tag != null && !tag.getString("resourceType").isEmpty()) {
-            tooltip.add(new StringTextComponent("Resource: ").mergeStyle(TextFormatting.YELLOW).appendSibling(new StringTextComponent(tag.getString("resourceType")).mergeStyle(TextFormatting.GOLD)));
+            tooltip.add(new StringTextComponent("Resource: ").withStyle(TextFormatting.YELLOW).append(new StringTextComponent(tag.getString("resourceType")).withStyle(TextFormatting.GOLD)));
         }
     }
 }
