@@ -23,8 +23,8 @@ public class PandaGroups {
 
         @Override
         public void fillItemList(NonNullList<ItemStack> items) {
-            ClientLevel world = Objects.requireNonNull(Minecraft.getInstance().level);
-            for(PandaRecipe recipe : world.getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE)) {
+            ClientLevel level = Objects.requireNonNull(Minecraft.getInstance().level);
+            for(PandaRecipe recipe : level.getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE)) {
                 ItemStack storageItem = new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());
                 CompoundTag tag = storageItem.getTag() == null ? new CompoundTag() : storageItem.getTag();
                 tag.putInt("primaryColor", Integer.decode("0x" + recipe.getHexColor().replaceFirst("#", "")));

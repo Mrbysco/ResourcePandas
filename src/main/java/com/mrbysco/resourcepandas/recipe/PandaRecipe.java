@@ -46,7 +46,7 @@ public class PandaRecipe implements Recipe<Container> {
 	}
 
 	@Override
-	public boolean matches(Container inv, Level worldIn) {
+	public boolean matches(Container inv, Level level) {
 		return this.ingredient.test(inv.getItem(0));
 	}
 

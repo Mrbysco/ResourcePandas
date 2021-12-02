@@ -7,15 +7,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class PandaRegistry {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Reference.MOD_ID);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Reference.MOD_ID);
 
-    public static final RegistryObject<EntityType<ResourcePandaEntity>> RESOURCE_PANDA = ENTITIES.register("resource_panda", () ->
+    public static final net.minecraftforge.registries.RegistryObject<EntityType<ResourcePandaEntity>> RESOURCE_PANDA = ENTITIES.register("resource_panda", () ->
             register("resource_panda", EntityType.Builder.<ResourcePandaEntity>of(ResourcePandaEntity::new, MobCategory.CREATURE)
             .sized(1.3F, 1.25F).clientTrackingRange(10)));
 

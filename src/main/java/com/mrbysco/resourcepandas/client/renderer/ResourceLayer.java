@@ -3,15 +3,15 @@ package com.mrbysco.resourcepandas.client.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.resources.ResourceLocation;
 
 public class ResourceLayer<T extends ResourcePandaEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
     private final ResourceLocation overlayLocation;
@@ -22,12 +22,12 @@ public class ResourceLayer<T extends ResourcePandaEntity, M extends EntityModel<
     }
 
     @Override
-    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T resourcePanda, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLightIn, T resourcePanda, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         if(resourcePanda.isTransformed() && resourcePanda.hasResourceVariant()) {
             EntityModel<T> entityModel = this.getParentModel();
             entityModel.prepareMobModel(resourcePanda, limbSwing, limbSwingAmount, partialTicks);
             this.getParentModel().copyPropertiesTo(entityModel);
-            VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderType.entityCutoutNoCull(this.overlayLocation));
+            VertexConsumer ivertexbuilder = bufferSource.getBuffer(RenderType.entityCutoutNoCull(this.overlayLocation));
             entityModel.setupAnim(resourcePanda, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
             String hexColor = resourcePanda.getHexColor();
 
@@ -50,7 +50,7 @@ public class ResourceLayer<T extends ResourcePandaEntity, M extends EntityModel<
                 green = getGreen(hexColor);
                 blue = getBlue(hexColor);
             }
-            entityModel.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green, blue, resourcePanda.getAlpha());
+            entityModel.renderToBuffer(poseStack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green, blue, resourcePanda.getAlpha());
         }
     }
 

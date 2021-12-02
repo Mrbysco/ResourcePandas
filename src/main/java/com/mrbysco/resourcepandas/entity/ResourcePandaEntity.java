@@ -47,8 +47,8 @@ public class ResourcePandaEntity extends Panda {
     private int resourceTransformationTime;
     private PandaRecipe cachedRecipe;
 
-    public ResourcePandaEntity(EntityType<? extends ResourcePandaEntity> type, Level worldIn) {
-        super(type, worldIn);
+    public ResourcePandaEntity(EntityType<? extends ResourcePandaEntity> type, Level level) {
+        super(type, level);
     }
 
     public static AttributeSupplier.Builder genAttributeMap() {
@@ -240,9 +240,9 @@ public class ResourcePandaEntity extends Panda {
         this.level.addParticle(ParticleTypes.SNEEZE, this.getX() - (double)(this.getBbWidth() + 1.0F) * 0.5D * (double) Mth.sin(this.yBodyRot * ((float)Math.PI / 180F)), this.getEyeY() - (double)0.1F, this.getZ() + (double)(this.getBbWidth() + 1.0F) * 0.5D * (double)Mth.cos(this.yBodyRot * ((float)Math.PI / 180F)), vector3d.x, 0.0D, vector3d.z);
         this.playSound(SoundEvents.PANDA_SNEEZE, 1.0F, 1.0F);
 
-        for(Panda pandaentity : this.level.getEntitiesOfClass(Panda.class, this.getBoundingBox().inflate(10.0D))) {
-            if (!pandaentity.isBaby() && pandaentity.isOnGround() && !pandaentity.isInWater() && pandaentity.canPerformAction()) {
-                jump(pandaentity);
+        for(Panda panda : this.level.getEntitiesOfClass(Panda.class, this.getBoundingBox().inflate(10.0D))) {
+            if (!panda.isBaby() && panda.isOnGround() && !panda.isInWater() && panda.canPerformAction()) {
+                jump(panda);
             }
         }
 
@@ -252,37 +252,37 @@ public class ResourcePandaEntity extends Panda {
         }
     }
 
-    public void jump(Panda pandaentity) {
-        float f = 0.42F * getJumpFactor(pandaentity);
-        if (pandaentity.hasEffect(MobEffects.JUMP)) {
-            f += 0.1F * (float)(pandaentity.getEffect(MobEffects.JUMP).getAmplifier() + 1);
+    public void jump(Panda panda) {
+        float f = 0.42F * getJumpFactor(panda);
+        if (panda.hasEffect(MobEffects.JUMP)) {
+            f += 0.1F * (float)(panda.getEffect(MobEffects.JUMP).getAmplifier() + 1);
         }
 
-        Vec3 vector3d = pandaentity.getDeltaMovement();
-        pandaentity.setDeltaMovement(vector3d.x, (double)f, vector3d.z);
-        if (pandaentity.isSprinting()) {
-            float f1 = pandaentity.getYRot() * ((float)Math.PI / 180F);
-            pandaentity.setDeltaMovement(pandaentity.getDeltaMovement().add((double)(-Mth.sin(f1) * 0.2F), 0.0D, (double)(Mth.cos(f1) * 0.2F)));
+        Vec3 vector3d = panda.getDeltaMovement();
+        panda.setDeltaMovement(vector3d.x, (double)f, vector3d.z);
+        if (panda.isSprinting()) {
+            float f1 = panda.getYRot() * ((float)Math.PI / 180F);
+            panda.setDeltaMovement(panda.getDeltaMovement().add((double)(-Mth.sin(f1) * 0.2F), 0.0D, (double)(Mth.cos(f1) * 0.2F)));
         }
 
-        pandaentity.hasImpulse = true;
-        net.minecraftforge.common.ForgeHooks.onLivingJump(pandaentity);
+        panda.hasImpulse = true;
+        net.minecraftforge.common.ForgeHooks.onLivingJump(panda);
     }
 
-    protected float getJumpFactor(Panda pandaentity) {
-        float f = pandaentity.level.getBlockState(pandaentity.blockPosition()).getBlock().getJumpFactor();
-        float f1 = pandaentity.level.getBlockState(getPositionUnderneath(pandaentity)).getBlock().getJumpFactor();
+    protected float getJumpFactor(Panda panda) {
+        float f = panda.level.getBlockState(panda.blockPosition()).getBlock().getJumpFactor();
+        float f1 = panda.level.getBlockState(getPositionUnderneath(panda)).getBlock().getJumpFactor();
         return (double)f == 1.0D ? f1 : f;
     }
 
-    protected BlockPos getPositionUnderneath(Panda pandaentity) {
-        return new BlockPos(pandaentity.position().x, pandaentity.getBoundingBox().minY - 0.5000001D, pandaentity.position().z);
+    protected BlockPos getPositionUnderneath(Panda panda) {
+        return new BlockPos(panda.position().x, panda.getBoundingBox().minY - 0.5000001D, panda.position().z);
     }
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
-        SpawnGroupData entityData = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor levelAccessor, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
+        SpawnGroupData entityData = super.finalizeSpawn(levelAccessor, difficultyIn, reason, spawnDataIn, dataTag);
         this.setMainGene(Gene.WEAK);
         this.setHiddenGene(Gene.WEAK);
         if(reason == MobSpawnType.SPAWN_EGG || reason == MobSpawnType.SPAWNER) {
