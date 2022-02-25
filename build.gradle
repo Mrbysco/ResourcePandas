@@ -94,9 +94,6 @@ repositories {
 	maven {
         url "https://maven.blamejared.com"
 	}
-	maven { 
-		url 'https://maven.mcmoddev.com' 
-	}
 }
 
 dependencies {
