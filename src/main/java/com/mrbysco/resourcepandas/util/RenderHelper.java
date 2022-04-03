@@ -13,14 +13,14 @@ public class RenderHelper {
 	public static void renderEntity(PoseStack poseStack, int x, int y, double scale, double yaw, double pitch, LivingEntity livingEntity) {
 		if (livingEntity.level == null) livingEntity.level = Minecraft.getInstance().level;
 		poseStack.pushPose();
-		poseStack.translate((float)x, (float)y, 50f);
+		poseStack.translate((float) x, (float) y, 50f);
 		poseStack.scale((float) scale, (float) scale, (float) scale);
 		poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
 		// Rotate entity
 		poseStack.mulPose(Vector3f.XP.rotationDegrees(((float) Math.atan((-40 / 40.0F))) * 10.0F));
 
-		livingEntity.yBodyRot = (float) -(yaw/40.F) * 20.0F;
-		livingEntity.setYRot((float) -(yaw/40.F) * 20.0F);
+		livingEntity.yBodyRot = (float) -(yaw / 40.F) * 20.0F;
+		livingEntity.setYRot((float) -(yaw / 40.F) * 20.0F);
 		livingEntity.yHeadRot = livingEntity.getYRot();
 		livingEntity.yHeadRotO = livingEntity.getYRot();
 

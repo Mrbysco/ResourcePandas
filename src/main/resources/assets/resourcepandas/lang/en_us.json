@@ -7,5 +7,5 @@
   "entity.resourcepandas.resource_panda": "Resource Panda",
   "resourcepandas.pandas.title": "Resource Pandas",
 
-  "resourcepandas.gui.jei.pandas.tooltip": "% Chance"
+  "resourcepandas.gui.jei.pandas.tooltip": "%s% Chance"
 }

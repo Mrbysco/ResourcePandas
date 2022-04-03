@@ -42,7 +42,7 @@ public class PandaRecipe implements Recipe<Container> {
 
 	@Override
 	public RecipeType<?> getType() {
-		return PandaRecipes.PANDA_RECIPE_TYPE;
+		return PandaRecipes.PANDA_RECIPE_TYPE.get();
 	}
 
 	@Override
@@ -96,12 +96,12 @@ public class PandaRecipe implements Recipe<Container> {
 	public float getChance() {
 		return chance;
 	}
-	
+
 	@Override
 	public RecipeSerializer<?> getSerializer() {
 		return PandaRecipes.PANDA_SERIALIZER.get();
 	}
-	
+
 	public static class SerializerPandaRecipe extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<PandaRecipe> {
 		@Override
 		public PandaRecipe fromJson(ResourceLocation recipeId, JsonObject jsonObject) {
@@ -110,7 +110,8 @@ public class PandaRecipe implements Recipe<Container> {
 			Ingredient ingredient = Ingredient.fromJson(jsonelement);
 			//Forge: Check if primitive string to keep vanilla or a object which can contain a count field.
 			ItemStack itemstack;
-			if (jsonObject.get("result").isJsonObject()) itemstack = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(jsonObject, "result"));
+			if (jsonObject.get("result").isJsonObject())
+				itemstack = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(jsonObject, "result"));
 			else {
 				String s1 = GsonHelper.getAsString(jsonObject, "result");
 				ResourceLocation resourcelocation = new ResourceLocation(s1);
@@ -120,7 +121,7 @@ public class PandaRecipe implements Recipe<Container> {
 			}
 
 			String hex = GsonHelper.getAsString(jsonObject, "hexColor", "#ffffff");
-			if(!hex.startsWith("#") || hex.length() != 7 || !hex.substring(1).matches("[0-9a-fA-F]+")) {
+			if (!hex.startsWith("#") || hex.length() != 7 || !hex.substring(1).matches("[0-9a-fA-F]+")) {
 				throw new IllegalStateException("HexColor: " + hex + " is not a valid hex");
 			}
 			float alpha = GsonHelper.getAsFloat(jsonObject, "alpha", 1.0F);

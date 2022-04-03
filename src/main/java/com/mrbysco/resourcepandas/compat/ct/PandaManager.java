@@ -45,6 +45,6 @@ public class PandaManager implements IRecipeManager {
 
 	@Override
 	public RecipeType<PandaRecipe> getRecipeType() {
-		return PandaRecipes.PANDA_RECIPE_TYPE;
+		return PandaRecipes.PANDA_RECIPE_TYPE.get();
 	}
 }

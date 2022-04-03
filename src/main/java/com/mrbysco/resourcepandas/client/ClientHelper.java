@@ -13,14 +13,14 @@ import java.util.function.Function;
 
 public class ClientHelper {
 	public static ResourcePandaEntity getResourcePanda(PandaRecipe recipe) {
-		if(recipe.panda == null) {
+		if (recipe.panda == null) {
 			CompoundTag nbt = new CompoundTag();
 			nbt.putString("id", ForgeRegistries.ENTITIES.getKey(PandaRegistry.RESOURCE_PANDA.get()).toString());
 			Minecraft mc = Minecraft.getInstance();
 			Level level = mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null ? mc.getSingleplayerServer().getAllLevels().iterator().next() : mc.level;
-			if(level != null) {
+			if (level != null) {
 				ResourcePandaEntity resourcePanda = (ResourcePandaEntity) EntityType.loadEntityRecursive(nbt, level, Function.identity());
-				if(resourcePanda != null) {
+				if (resourcePanda != null) {
 					resourcePanda.setResourceVariant(recipe.getId().toString());
 					resourcePanda.setHexcolor(recipe.getHexColor());
 					resourcePanda.setAlpha(recipe.getAlpha());

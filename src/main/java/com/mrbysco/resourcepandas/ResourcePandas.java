@@ -17,27 +17,28 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(Reference.MOD_ID)
 public class ResourcePandas {
-    public static final Logger LOGGER = LogManager.getLogger();
+	public static final Logger LOGGER = LogManager.getLogger();
 
-    public ResourcePandas() {
-        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+	public ResourcePandas() {
+		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        MinecraftForge.EVENT_BUS.register(new ConversionHandler());
+		MinecraftForge.EVENT_BUS.register(new ConversionHandler());
 
-        PandaRegistry.ENTITIES.register(eventBus);
-        PandaRegistry.ITEMS.register(eventBus);
-        PandaRecipes.RECIPE_SERIALIZERS.register(eventBus);
+		PandaRegistry.ENTITIES.register(eventBus);
+		PandaRegistry.ITEMS.register(eventBus);
+		PandaRecipes.RECIPE_TYPES.register(eventBus);
+		PandaRecipes.RECIPE_SERIALIZERS.register(eventBus);
 
-        MinecraftForge.EVENT_BUS.register(this);
-        eventBus.addListener(this::registerEntityAttributes);
+		MinecraftForge.EVENT_BUS.register(this);
+		eventBus.addListener(this::registerEntityAttributes);
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            eventBus.addListener(ClientHandler::registerEntityRenders);
-            eventBus.addListener(ClientHandler::registerItemColors);
-        });
-    }
+		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+			eventBus.addListener(ClientHandler::registerEntityRenders);
+			eventBus.addListener(ClientHandler::registerItemColors);
+		});
+	}
 
-    public void registerEntityAttributes(EntityAttributeCreationEvent event) {
-        event.put(PandaRegistry.RESOURCE_PANDA.get(), ResourcePandaEntity.genAttributeMap().build());
-    }
+	public void registerEntityAttributes(EntityAttributeCreationEvent event) {
+		event.put(PandaRegistry.RESOURCE_PANDA.get(), ResourcePandaEntity.genAttributeMap().build());
+	}
 }

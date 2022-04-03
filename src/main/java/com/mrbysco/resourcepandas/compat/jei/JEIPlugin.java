@@ -9,6 +9,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -28,6 +29,8 @@ public class JEIPlugin implements IModPlugin {
 	private static final ResourceLocation UID = new ResourceLocation(Reference.MOD_ID, "jei_plugin");
 
 	public static final ResourceLocation PANDAS = new ResourceLocation(Reference.MOD_ID, "pandas");
+	public static final RecipeType<PandaRecipe> PANDA_RECIPE_TYPE = RecipeType.create(Reference.MOD_ID, "pandas", PandaRecipe.class);
+
 	@Nullable
 	private IRecipeCategory<PandaRecipe> pandaCategory;
 
@@ -47,15 +50,15 @@ public class JEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-		registration.addRecipeCatalyst(new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get()), PANDAS);
+		registration.addRecipeCatalyst(new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get()), PANDA_RECIPE_TYPE);
 	}
 
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
-		ErrorUtil.checkNotNull(pandaCategory, "pandaCategory");
+		ErrorUtil.checkNotNull(PANDA_RECIPE_TYPE, "pandaRecipeType");
 
 		ClientLevel world = Objects.requireNonNull(Minecraft.getInstance().level);
-		registration.addRecipes(world.getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE), PANDAS);
+		registration.addRecipes(PANDA_RECIPE_TYPE, world.getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get()));
 	}
 
 	@Override

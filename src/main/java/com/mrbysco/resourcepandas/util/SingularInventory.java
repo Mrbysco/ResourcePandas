@@ -6,16 +6,17 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-public class SingularInventory  implements Container {
+public class SingularInventory implements Container {
 	private final NonNullList<ItemStack> itemStacks = NonNullList.withSize(1, ItemStack.EMPTY);
 
 	@Override
 	public int getContainerSize() {
 		return 1;
 	}
+
 	@Override
 	public boolean isEmpty() {
-		for(ItemStack itemstack : this.itemStacks) {
+		for (ItemStack itemstack : this.itemStacks) {
 			if (!itemstack.isEmpty()) {
 				return false;
 			}
