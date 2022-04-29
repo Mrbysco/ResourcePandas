@@ -12,14 +12,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
-import org.openzen.zencode.java.ZenCodeGlobals.Global;
 import org.openzen.zencode.java.ZenCodeType.Method;
 import org.openzen.zencode.java.ZenCodeType.Name;
 
 @ZenRegister
 @Name("mods.resourcepandas.PandaManager")
 public class PandaManager implements IRecipeManager {
-	@Global("pandas")
+
 	public static final PandaManager INSTANCE = new PandaManager();
 
 	private PandaManager() {
