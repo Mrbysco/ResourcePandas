@@ -15,7 +15,7 @@ public class ClientHelper {
 	public static ResourcePandaEntity getResourcePanda(PandaRecipe recipe) {
 		if (recipe.panda == null) {
 			CompoundTag nbt = new CompoundTag();
-			nbt.putString("id", ForgeRegistries.ENTITIES.getKey(PandaRegistry.RESOURCE_PANDA.get()).toString());
+			nbt.putString("id", ForgeRegistries.ENTITY_TYPES.getKey(PandaRegistry.RESOURCE_PANDA.get()).toString());
 			Minecraft mc = Minecraft.getInstance();
 			Level level = mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null ? mc.getSingleplayerServer().getAllLevels().iterator().next() : mc.level;
 			if (level != null) {

@@ -21,7 +21,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -50,18 +49,8 @@ public class PandaCategory implements IRecipeCategory<PandaRecipe> {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
-		return JEIPlugin.PANDAS;
-	}
-
-	@Override
-	public Class<? extends PandaRecipe> getRecipeClass() {
-		return PandaRecipe.class;
-	}
-
-	@Override
 	public Component getTitle() {
-		return new TranslatableComponent("resourcepandas.pandas.title");
+		return Component.translatable("resourcepandas.pandas.title");
 	}
 
 	@Override
@@ -111,7 +100,7 @@ public class PandaCategory implements IRecipeCategory<PandaRecipe> {
 
 		@Override
 		public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
-			tooltip.add(new TranslatableComponent("resourcepandas.gui.jei.pandas.tooltip", (int) (100 * recipe.getChance())).withStyle(ChatFormatting.YELLOW));
+			tooltip.add(Component.translatable("resourcepandas.gui.jei.pandas.tooltip", (int) (100 * recipe.getChance())).withStyle(ChatFormatting.YELLOW));
 		}
 	}
 }

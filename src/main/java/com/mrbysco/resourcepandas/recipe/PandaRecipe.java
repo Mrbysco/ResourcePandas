@@ -16,7 +16,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
@@ -102,7 +101,7 @@ public class PandaRecipe implements Recipe<Container> {
 		return PandaRecipes.PANDA_SERIALIZER.get();
 	}
 
-	public static class SerializerPandaRecipe extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<PandaRecipe> {
+	public static class SerializerPandaRecipe implements RecipeSerializer<PandaRecipe> {
 		@Override
 		public PandaRecipe fromJson(ResourceLocation recipeId, JsonObject jsonObject) {
 			String s = GsonHelper.getAsString(jsonObject, "name", "");

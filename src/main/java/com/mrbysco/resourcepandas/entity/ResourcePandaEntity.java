@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -73,7 +72,7 @@ public class ResourcePandaEntity extends Panda {
 
 	@Override
 	public Component getName() {
-		return !this.hasCustomName() ? new TextComponent(String.format("%s ", this.getResourceName())).append(super.getName()) : super.getName();
+		return !this.hasCustomName() ? Component.literal(String.format("%s ", this.getResourceName())).append(super.getName()) : super.getName();
 	}
 
 	@Override

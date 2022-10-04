@@ -10,7 +10,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
@@ -107,9 +106,9 @@ public class PandaSpawnEggItem extends ForgeSpawnEggItem {
 			ResourceLocation location = ResourceLocation.tryParse(tag.getString("resourceType"));
 			if (location != null) {
 				if (Screen.hasShiftDown()) {
-					tooltip.add(new TextComponent("Resource: ").withStyle(ChatFormatting.YELLOW).append(new TextComponent(location.toString()).withStyle(ChatFormatting.GOLD)));
+					tooltip.add(Component.literal("Resource: ").withStyle(ChatFormatting.YELLOW).append(Component.literal(location.toString()).withStyle(ChatFormatting.GOLD)));
 				} else {
-					tooltip.add(new TextComponent("Resource: ").withStyle(ChatFormatting.YELLOW).append(new TextComponent(location.getPath()).withStyle(ChatFormatting.GOLD)));
+					tooltip.add(Component.literal("Resource: ").withStyle(ChatFormatting.YELLOW).append(Component.literal(location.getPath()).withStyle(ChatFormatting.GOLD)));
 				}
 			}
 		}

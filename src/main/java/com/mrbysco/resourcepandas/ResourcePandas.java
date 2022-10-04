@@ -24,7 +24,7 @@ public class ResourcePandas {
 
 		MinecraftForge.EVENT_BUS.register(new ConversionHandler());
 
-		PandaRegistry.ENTITIES.register(eventBus);
+		PandaRegistry.ENTITY_TYPES.register(eventBus);
 		PandaRegistry.ITEMS.register(eventBus);
 		PandaRecipes.RECIPE_TYPES.register(eventBus);
 		PandaRecipes.RECIPE_SERIALIZERS.register(eventBus);
