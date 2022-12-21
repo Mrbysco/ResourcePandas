@@ -84,19 +84,19 @@ repositories {
     maven {
         url = "https://dvs1.progwml6.com/files/maven"
     }
-   maven {
-       url "https://maven.blamejared.com"
-   }
+    maven {
+        url "https://maven.blamejared.com"
+    }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
-
-    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
-   implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${mc_version}:${crafttweaker_version}")
+//    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
+//    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
+//
+//    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+//    implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${mc_version}:${crafttweaker_version}")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -132,7 +132,7 @@ publishing {
     repositories {
         if (System.getenv().SAP_SECRET) {
             maven {
-                url "https://maven.saps.dev/minecraft"
+                url "https://maven.saps.dev/releases"
                 credentials {
                     username = "mrbysco"
                     password = "${System.getenv().SAP_SECRET}"

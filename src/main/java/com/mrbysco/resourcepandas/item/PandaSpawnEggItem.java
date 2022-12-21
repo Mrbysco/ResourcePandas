@@ -18,7 +18,6 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -48,8 +47,7 @@ public class PandaSpawnEggItem extends ForgeSpawnEggItem {
 			CompoundTag tag = itemstack.getTag() == null ? new CompoundTag() : itemstack.getTag();
 			if (blockstate.is(Blocks.SPAWNER)) {
 				BlockEntity blockentity = level.getBlockEntity(blockpos);
-				if (blockentity instanceof SpawnerBlockEntity) {
-					BaseSpawner spawner = ((SpawnerBlockEntity) blockentity).getSpawner();
+				if (blockentity instanceof SpawnerBlockEntity spawnerblockentity) {
 					EntityType<ResourcePandaEntity> type = PandaRegistry.RESOURCE_PANDA.get();
 					if (tag.contains("resourceType")) {
 						String resourceType = tag.getString("resourceType");
@@ -59,10 +57,10 @@ public class PandaSpawnEggItem extends ForgeSpawnEggItem {
 						if (panda != null) {
 							initializePanda(level, panda, tag);
 						} else {
-							spawner.setEntityId(type);
+							spawnerblockentity.setEntityId(type, level.getRandom());
 						}
 					} else {
-						spawner.setEntityId(type);
+						spawnerblockentity.setEntityId(type, level.getRandom());
 					}
 					blockentity.setChanged();
 					level.sendBlockUpdated(blockpos, blockstate, blockstate, 3);
