@@ -19,31 +19,31 @@ import org.openzen.zencode.java.ZenCodeType.Name;
 @Name("mods.resourcepandas.PandaManager")
 public class PandaManager implements IRecipeManager<PandaRecipe> {
 
-    public static final PandaManager INSTANCE = new PandaManager();
+	public static final PandaManager INSTANCE = new PandaManager();
 
-    private PandaManager() {
-    }
+	private PandaManager() {
+	}
 
-    @Method
-    public void addPanda(String id, String name, IIngredient input, IItemStack output, String hex, float alpha, float chance) {
-        final ResourceLocation location = new ResourceLocation("crafttweaker", id);
-        final Ingredient ingredient = input.asVanillaIngredient();
-        final ItemStack resultItemStack = output.getInternal();
-        final PandaRecipe recipe = new PandaRecipe(location, name, ingredient, resultItemStack, hex, alpha, chance);
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(this, recipe));
-    }
+	@Method
+	public void addPanda(String id, String name, IIngredient input, IItemStack output, String hex, float alpha, float chance) {
+		final ResourceLocation location = new ResourceLocation("crafttweaker", id);
+		final Ingredient ingredient = input.asVanillaIngredient();
+		final ItemStack resultItemStack = output.getInternal();
+		final PandaRecipe recipe = new PandaRecipe(location, name, ingredient, resultItemStack, hex, alpha, chance);
+		CraftTweakerAPI.apply(new ActionAddRecipe<>(this, recipe));
+	}
 
-    @Method
-    public void addPanda(String id, String name, IIngredient input, IItemStack output, String hex, float chance) {
-        final ResourceLocation location = new ResourceLocation("crafttweaker", id);
-        final Ingredient ingredient = input.asVanillaIngredient();
-        final ItemStack resultItemStack = output.getInternal();
-        final PandaRecipe recipe = new PandaRecipe(location, name, ingredient, resultItemStack, hex, 1.0F, chance);
-        CraftTweakerAPI.apply(new ActionAddRecipe<>(this, recipe));
-    }
+	@Method
+	public void addPanda(String id, String name, IIngredient input, IItemStack output, String hex, float chance) {
+		final ResourceLocation location = new ResourceLocation("crafttweaker", id);
+		final Ingredient ingredient = input.asVanillaIngredient();
+		final ItemStack resultItemStack = output.getInternal();
+		final PandaRecipe recipe = new PandaRecipe(location, name, ingredient, resultItemStack, hex, 1.0F, chance);
+		CraftTweakerAPI.apply(new ActionAddRecipe<>(this, recipe));
+	}
 
-    @Override
-    public RecipeType<PandaRecipe> getRecipeType() {
-        return PandaRecipes.PANDA_RECIPE_TYPE.get();
-    }
+	@Override
+	public RecipeType<PandaRecipe> getRecipeType() {
+		return PandaRecipes.PANDA_RECIPE_TYPE.get();
+	}
 }
