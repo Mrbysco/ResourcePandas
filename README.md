@@ -1,3 +1,5 @@
+[![build](https://github.com/Mrbysco/ResourcePandas/actions/workflows/build.yml/badge.svg)](https://github.com/Mrbysco/ResourcePandas/actions/workflows/build.yml) 
+[![](http://cf.way2muchnoise.eu/versions/410681.svg)](https://www.curseforge.com/minecraft/mc-mods/resource-pandas)
 # Resource Pandas #
 
 ## About ##
