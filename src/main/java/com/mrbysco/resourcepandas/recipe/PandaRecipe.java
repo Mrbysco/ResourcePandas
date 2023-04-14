@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -16,8 +17,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class PandaRecipe implements Recipe<Container> {
 	protected final ResourceLocation id;
@@ -50,8 +50,8 @@ public class PandaRecipe implements Recipe<Container> {
 	}
 
 	@Override
-	public ItemStack assemble(Container inventory) {
-		return getResultItem();
+	public ItemStack assemble(Container inventory, RegistryAccess access) {
+		return getResultItem(access);
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class PandaRecipe implements Recipe<Container> {
 	}
 
 	@Override
-	public ItemStack getResultItem() {
+	public ItemStack getResultItem(RegistryAccess access) {
 		return this.result.copy();
 	}
 

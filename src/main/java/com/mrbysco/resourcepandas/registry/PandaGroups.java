@@ -23,7 +23,7 @@ public class PandaGroups {
 		SPAWN_EGGS = event.registerCreativeModeTab(new ResourceLocation(Reference.MOD_ID, "tab"), builder ->
 				builder.icon(() -> new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get()))
 						.title(Component.translatable("itemGroup.resourcepandas:spawn_eggs"))
-						.displayItems((features, output, hasPermissions) -> {
+						.displayItems((displayParameters, output) -> {
 							ClientLevel level = Objects.requireNonNull(Minecraft.getInstance().level);
 							for (PandaRecipe recipe : level.getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get())) {
 								ItemStack storageItem = new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());

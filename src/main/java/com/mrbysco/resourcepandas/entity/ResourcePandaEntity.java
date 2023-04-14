@@ -31,8 +31,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class ResourcePandaEntity extends Panda {
@@ -247,7 +247,7 @@ public class ResourcePandaEntity extends Panda {
 
 		if (!this.level.isClientSide() && this.random.nextFloat() <= getPandaRecipe().getChance() && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
 			PandaRecipe recipe = getPandaRecipe();
-			this.spawnAtLocation(recipe.getResultItem());
+			this.spawnAtLocation(recipe.getResultItem(level.registryAccess()));
 		}
 	}
 
@@ -275,7 +275,7 @@ public class ResourcePandaEntity extends Panda {
 	}
 
 	protected BlockPos getPositionUnderneath(Panda panda) {
-		return new BlockPos(panda.position().x, panda.getBoundingBox().minY - 0.5000001D, panda.position().z);
+		return BlockPos.containing(panda.position().x, panda.getBoundingBox().minY - 0.5000001D, panda.position().z);
 	}
 
 	@Nullable
