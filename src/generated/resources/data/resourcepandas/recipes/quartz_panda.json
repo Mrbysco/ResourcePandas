@@ -1,12 +1,12 @@
 {
   "type": "resourcepandas:panda_recipe",
-  "name": "Quartz",
+  "alpha": 1.0,
+  "chance": 0.6,
+  "hexColor": "#ddd4c6",
   "ingredient": {
     "tag": "forge:storage_blocks/quartz"
   },
-  "hexColor": "#ddd4c6",
-  "chance": 0.6,
-  "alpha": 1.0,
+  "name": "Quartz",
   "result": {
     "item": "minecraft:quartz"
   }

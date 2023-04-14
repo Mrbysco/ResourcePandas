@@ -1,12 +1,12 @@
 {
   "type": "resourcepandas:panda_recipe",
-  "name": "Copper",
-  "ingredient": {
-    "item": "minecraft:copper_block"
-  },
-  "hexColor": "#e77c56",
-  "chance": 0.6,
   "alpha": 1.0,
+  "chance": 0.6,
+  "hexColor": "#e77c56",
+  "ingredient": {
+    "tag": "forge:storage_blocks/copper"
+  },
+  "name": "Copper",
   "result": {
     "item": "minecraft:copper_ingot"
   }

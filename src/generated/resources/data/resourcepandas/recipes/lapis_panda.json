@@ -1,12 +1,12 @@
 {
   "type": "resourcepandas:panda_recipe",
-  "name": "Lapis",
+  "alpha": 1.0,
+  "chance": 0.6,
+  "hexColor": "#345ec3",
   "ingredient": {
     "tag": "forge:storage_blocks/lapis"
   },
-  "hexColor": "#345ec3",
-  "chance": 0.6,
-  "alpha": 1.0,
+  "name": "Lapis",
   "result": {
     "item": "minecraft:lapis_lazuli"
   }
