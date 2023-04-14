@@ -3,7 +3,6 @@ package com.mrbysco.resourcepandas.datagen.builder;
 import com.google.gson.JsonObject;
 import com.mrbysco.resourcepandas.recipe.PandaRecipes;
 import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.core.Registry;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -105,7 +105,7 @@ public class ResourceRecipeBuilder implements RecipeBuilder {
 			jsonObject.addProperty("alpha", this.alpha);
 			jsonObject.addProperty("chance", this.chance);
 			JsonObject jsonobject = new JsonObject();
-			jsonobject.addProperty("item", Registry.ITEM.getKey(this.result).toString());
+			jsonobject.addProperty("item", ForgeRegistries.ITEMS.getKey(this.result).toString());
 			if (this.count > 1) {
 				jsonobject.addProperty("count", this.count);
 			}

@@ -3,6 +3,7 @@ package com.mrbysco.resourcepandas.datagen;
 import com.mrbysco.resourcepandas.Reference;
 import com.mrbysco.resourcepandas.datagen.builder.ResourceRecipeBuilder;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceLocation;
@@ -21,18 +22,19 @@ public class ResourceDatagen {
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent event) {
 		DataGenerator generator = event.getGenerator();
+		PackOutput packOutput = generator.getPackOutput();
 		ExistingFileHelper helper = event.getExistingFileHelper();
 
-		generator.addProvider(event.includeServer(), new ResourceRecipeProvider(generator));
+		generator.addProvider(event.includeServer(), new ResourceRecipeProvider(packOutput));
 	}
 
 	public static class ResourceRecipeProvider extends RecipeProvider {
-		public ResourceRecipeProvider(DataGenerator generator) {
-			super(generator);
+		public ResourceRecipeProvider(PackOutput packOutput) {
+			super(packOutput);
 		}
 
 		@Override
-		protected void buildCraftingRecipes(Consumer<FinishedRecipe> recipeConsumer) {
+		protected void buildRecipes(Consumer<FinishedRecipe> recipeConsumer) {
 			ResourceRecipeBuilder.resource(Ingredient.of(Tags.Items.STORAGE_BLOCKS_COAL), Items.COAL, 1)
 					.name("Coal").color("#363636").alpha(1.0F).chance(0.6F).save(recipeConsumer,
 							new ResourceLocation(Reference.MOD_ID, "coal_panda"));
