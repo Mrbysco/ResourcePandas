@@ -1,12 +1,12 @@
 {
   "type": "resourcepandas:panda_recipe",
-  "name": "Redstone",
+  "alpha": 1.0,
+  "chance": 0.6,
+  "hexColor": "#aa0f01",
   "ingredient": {
     "tag": "forge:storage_blocks/redstone"
   },
-  "hexColor": "#aa0f01",
-  "chance": 0.6,
-  "alpha": 1.0,
+  "name": "Redstone",
   "result": {
     "item": "minecraft:redstone"
   }

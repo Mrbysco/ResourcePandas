@@ -1,12 +1,12 @@
 {
   "type": "resourcepandas:panda_recipe",
-  "name": "Gold",
+  "alpha": 1.0,
+  "chance": 0.5,
+  "hexColor": "#f8d26a",
   "ingredient": {
     "tag": "forge:storage_blocks/gold"
   },
-  "hexColor": "#f8d26a",
-  "chance": 0.5,
-  "alpha": 1.0,
+  "name": "Gold",
   "result": {
     "item": "minecraft:gold_nugget"
   }

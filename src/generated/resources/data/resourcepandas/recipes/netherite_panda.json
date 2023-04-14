@@ -1,12 +1,12 @@
 {
   "type": "resourcepandas:panda_recipe",
-  "name": "Netherite",
+  "alpha": 1.0,
+  "chance": 0.06,
+  "hexColor": "#4c4143",
   "ingredient": {
     "tag": "forge:storage_blocks/netherite"
   },
-  "hexColor": "#4c4143",
-  "chance": 0.06,
-  "alpha": 1.0,
+  "name": "Netherite",
   "result": {
     "item": "minecraft:netherite_scrap"
   }
