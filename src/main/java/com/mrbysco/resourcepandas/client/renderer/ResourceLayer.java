@@ -34,7 +34,7 @@ public class ResourceLayer<T extends ResourcePandaEntity, M extends EntityModel<
 			float red;
 			float green;
 			float blue;
-			if (resourcePanda.hasCustomName() && "jeb_".equals(resourcePanda.getName().getContents())) {
+			if (resourcePanda.hasCustomName() && "jeb_".equals(resourcePanda.getName().getString())) {
 				int i = resourcePanda.tickCount / 25 + resourcePanda.getId();
 				int j = DyeColor.values().length;
 				int k = i % j;
