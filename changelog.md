@@ -1,1 +1,1 @@
-* Fix a rendering bug
+* Re-enable JEI support
