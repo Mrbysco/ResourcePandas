@@ -79,7 +79,6 @@ public class PandaSpawnEggItem extends ForgeSpawnEggItem {
 			EntityType<ResourcePandaEntity> type = PandaRegistry.RESOURCE_PANDA.get();
 			ResourcePandaEntity panda = (ResourcePandaEntity) type.spawn((ServerLevel) level, itemstack, context.getPlayer(), pos2, MobSpawnType.SPAWN_EGG, true, !Objects.equals(blockpos, pos2) && direction == Direction.UP);
 			if (panda != null) {
-
 				initializePanda(level, panda, tag);
 				itemstack.shrink(1);
 			}

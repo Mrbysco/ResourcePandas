@@ -20,6 +20,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
@@ -79,25 +80,25 @@ public class PandaCategory implements IRecipeCategory<PandaRecipe> {
 	}
 
 	@Override
-	public void draw(PandaRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
-		IRecipeCategory.super.draw(recipe, recipeSlotsView, stack, mouseX, mouseY);
+	public void draw(PandaRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+		IRecipeCategory.super.draw(recipe, recipeSlotsView, guiGraphics, mouseX, mouseY);
 
 		// Draw entity
 		ResourcePandaEntity resourcePanda = recipe.getResourcePanda();
 		if (resourcePanda != null) {
-			RenderHelper.renderEntity(stack, 60, 52, 20.0F, 38 - mouseX, 80 - mouseY, resourcePanda);
+			RenderHelper.renderEntity(guiGraphics, 60, 52, 20.0F, 38 - mouseX, 80 - mouseY, resourcePanda);
 		}
 
 		// Draw entity name
-		stack.pushPose();
-		stack.translate(1, 0, 0);
+		final PoseStack poseStack = guiGraphics.pose();
+		poseStack.translate(1, 0, 0);
 		Font font = Minecraft.getInstance().font;
 		String text = recipe.getName();
 		if (font.width(text) > 122) {
-			stack.scale(0.75F, 0.75F, 0.75F);
+			poseStack.scale(0.75F, 0.75F, 0.75F);
 		}
-		font.draw(stack, text, 0, 0, 8);
-		stack.popPose();
+		guiGraphics.drawString(font, text, 0, 0, 8, false);
+		poseStack.popPose();
 	}
 
 	public static class OutputTooltip implements IRecipeSlotTooltipCallback {

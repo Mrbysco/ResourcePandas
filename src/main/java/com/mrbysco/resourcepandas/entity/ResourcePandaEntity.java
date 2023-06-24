@@ -148,7 +148,7 @@ public class ResourcePandaEntity extends Panda {
 		this.setHiddenGene(Gene.WEAK);
 
 		if (!this.isSilent()) {
-			this.level.levelEvent((Player) null, 1040, this.blockPosition(), 0);
+			this.level().levelEvent((Player) null, 1040, this.blockPosition(), 0);
 		}
 	}
 
@@ -168,7 +168,7 @@ public class ResourcePandaEntity extends Panda {
 
 	@Override
 	public void tick() {
-		if (!this.level.isClientSide && this.isAlive() && !this.isNoAi()) {
+		if (!this.level().isClientSide && this.isAlive() && !this.isNoAi()) {
 			if (!this.isTransformed()) {
 				--this.resourceTransformationTime;
 				if (this.resourceTransformationTime < 0) {
@@ -236,18 +236,18 @@ public class ResourcePandaEntity extends Panda {
 	@Override
 	public void afterSneeze() {
 		Vec3 vector3d = this.getDeltaMovement();
-		this.level.addParticle(ParticleTypes.SNEEZE, this.getX() - (double) (this.getBbWidth() + 1.0F) * 0.5D * (double) Mth.sin(this.yBodyRot * ((float) Math.PI / 180F)), this.getEyeY() - (double) 0.1F, this.getZ() + (double) (this.getBbWidth() + 1.0F) * 0.5D * (double) Mth.cos(this.yBodyRot * ((float) Math.PI / 180F)), vector3d.x, 0.0D, vector3d.z);
+		this.level().addParticle(ParticleTypes.SNEEZE, this.getX() - (double) (this.getBbWidth() + 1.0F) * 0.5D * (double) Mth.sin(this.yBodyRot * ((float) Math.PI / 180F)), this.getEyeY() - (double) 0.1F, this.getZ() + (double) (this.getBbWidth() + 1.0F) * 0.5D * (double) Mth.cos(this.yBodyRot * ((float) Math.PI / 180F)), vector3d.x, 0.0D, vector3d.z);
 		this.playSound(SoundEvents.PANDA_SNEEZE, 1.0F, 1.0F);
 
-		for (Panda panda : this.level.getEntitiesOfClass(Panda.class, this.getBoundingBox().inflate(10.0D))) {
-			if (!panda.isBaby() && panda.isOnGround() && !panda.isInWater() && panda.canPerformAction()) {
+		for (Panda panda : this.level().getEntitiesOfClass(Panda.class, this.getBoundingBox().inflate(10.0D))) {
+			if (!panda.isBaby() && panda.onGround() && !panda.isInWater() && panda.canPerformAction()) {
 				jump(panda);
 			}
 		}
 
-		if (!this.level.isClientSide() && this.random.nextFloat() <= getPandaRecipe().getChance() && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+		if (!this.level().isClientSide() && this.random.nextFloat() <= getPandaRecipe().getChance() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
 			PandaRecipe recipe = getPandaRecipe();
-			this.spawnAtLocation(recipe.getResultItem(level.registryAccess()));
+			this.spawnAtLocation(recipe.getResultItem(this.level().registryAccess()));
 		}
 	}
 
@@ -269,8 +269,8 @@ public class ResourcePandaEntity extends Panda {
 	}
 
 	protected float getJumpFactor(Panda panda) {
-		float f = panda.level.getBlockState(panda.blockPosition()).getBlock().getJumpFactor();
-		float f1 = panda.level.getBlockState(getPositionUnderneath(panda)).getBlock().getJumpFactor();
+		float f = panda.level().getBlockState(panda.blockPosition()).getBlock().getJumpFactor();
+		float f1 = panda.level().getBlockState(getPositionUnderneath(panda)).getBlock().getJumpFactor();
 		return (double) f == 1.0D ? f1 : f;
 	}
 

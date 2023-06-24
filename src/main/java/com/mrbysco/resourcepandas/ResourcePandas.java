@@ -4,7 +4,6 @@ import com.mrbysco.resourcepandas.client.ClientHandler;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import com.mrbysco.resourcepandas.handler.ConversionHandler;
 import com.mrbysco.resourcepandas.recipe.PandaRecipes;
-import com.mrbysco.resourcepandas.registry.PandaGroups;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -27,12 +26,12 @@ public class ResourcePandas {
 
 		PandaRegistry.ENTITY_TYPES.register(eventBus);
 		PandaRegistry.ITEMS.register(eventBus);
+		PandaRegistry.CREATIVE_MODE_TABS.register(eventBus);
 		PandaRecipes.RECIPE_TYPES.register(eventBus);
 		PandaRecipes.RECIPE_SERIALIZERS.register(eventBus);
 
 		MinecraftForge.EVENT_BUS.register(this);
 		eventBus.addListener(this::registerEntityAttributes);
-		eventBus.register(new PandaGroups());
 
 		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
 			eventBus.addListener(ClientHandler::registerEntityRenders);

@@ -12,7 +12,6 @@ public class ClientHandler {
 	}
 
 	public static void registerItemColors(final RegisterColorHandlersEvent.Item event) {
-
 		PandaSpawnEggItem pandaEgg = (PandaSpawnEggItem) PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get();
 		event.register((stack, tintIndex) -> pandaEgg.getColor(stack, tintIndex), pandaEgg);
 	}

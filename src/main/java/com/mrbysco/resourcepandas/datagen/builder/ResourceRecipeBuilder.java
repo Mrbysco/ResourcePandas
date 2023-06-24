@@ -97,7 +97,6 @@ public class ResourceRecipeBuilder implements RecipeBuilder {
 			this.chance = chance;
 		}
 
-		@SuppressWarnings("deprecation")
 		public void serializeRecipeData(JsonObject jsonObject) {
 			jsonObject.add("ingredient", ingredient.toJson());
 			jsonObject.addProperty("name", this.name);
