@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
@@ -35,6 +36,7 @@ public class PandaRegistry {
 
 	public static final RegistryObject<CreativeModeTab> SPAWN_EGGS = CREATIVE_MODE_TABS.register("tab", () -> CreativeModeTab.builder()
 			.icon(() -> new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get()))
+			.withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
 			.title(Component.translatable("itemGroup.resourcepandas:spawn_eggs"))
 			.displayItems((displayParameters, output) -> {
 				ClientLevel level = Objects.requireNonNull(Minecraft.getInstance().level);
