@@ -7,7 +7,7 @@ Panda's that sneeze out resources. It's a snotty goldmine!
 
 ## License ##
 * Resource Pandas is licensed under the MIT License
-  - (c) 2020 Mrbysco
+  - (c) 2023 Mrbysco
   - [![License](https://img.shields.io/badge/License-MIT-red.svg?style=flat)](http://opensource.org/licenses/MIT)
 
 ## Downloads ##
