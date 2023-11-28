@@ -2,15 +2,18 @@ package com.mrbysco.resourcepandas.datagen.builder;
 
 import com.google.gson.JsonObject;
 import com.mrbysco.resourcepandas.recipe.PandaRecipes;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.CriterionTriggerInstance;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -58,7 +61,8 @@ public class ResourceRecipeBuilder implements RecipeBuilder {
 		return this;
 	}
 
-	public ResourceRecipeBuilder unlockedBy(String s, CriterionTriggerInstance triggerInstance) {
+	@Override
+	public RecipeBuilder unlockedBy(String s, Criterion<?> criterion) {
 		return this;
 	}
 
@@ -70,8 +74,8 @@ public class ResourceRecipeBuilder implements RecipeBuilder {
 		return this.result;
 	}
 
-	public void save(Consumer<FinishedRecipe> recipeConsumer, ResourceLocation id) {
-		recipeConsumer.accept(new ResourceRecipeBuilder.Result(id, this.result, this.count, this.ingredient,
+	public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+		recipeOutput.accept(new ResourceRecipeBuilder.Result(id, this.result, this.count, this.ingredient,
 				this.name, this.hexColor, this.alpha, this.chance));
 	}
 
@@ -98,13 +102,13 @@ public class ResourceRecipeBuilder implements RecipeBuilder {
 		}
 
 		public void serializeRecipeData(JsonObject jsonObject) {
-			jsonObject.add("ingredient", ingredient.toJson());
+			jsonObject.add("ingredient", ingredient.toJson(false));
 			jsonObject.addProperty("name", this.name);
 			jsonObject.addProperty("hexColor", this.hexColor);
 			jsonObject.addProperty("alpha", this.alpha);
 			jsonObject.addProperty("chance", this.chance);
 			JsonObject jsonobject = new JsonObject();
-			jsonobject.addProperty("item", ForgeRegistries.ITEMS.getKey(this.result).toString());
+			jsonobject.addProperty("item", BuiltInRegistries.ITEM.getKey(this.result).toString());
 			if (this.count > 1) {
 				jsonobject.addProperty("count", this.count);
 			}
@@ -112,23 +116,19 @@ public class ResourceRecipeBuilder implements RecipeBuilder {
 			jsonObject.add("result", jsonobject);
 		}
 
-		public RecipeSerializer<?> getType() {
+		@Override
+		public RecipeSerializer<?> type() {
 			return PandaRecipes.PANDA_SERIALIZER.get();
 		}
 
 		@Nullable
 		@Override
-		public JsonObject serializeAdvancement() {
+		public AdvancementHolder advancement() {
 			return null;
 		}
 
-		@Nullable
 		@Override
-		public ResourceLocation getAdvancementId() {
-			return null;
-		}
-
-		public ResourceLocation getId() {
+		public ResourceLocation id() {
 			return this.id;
 		}
 

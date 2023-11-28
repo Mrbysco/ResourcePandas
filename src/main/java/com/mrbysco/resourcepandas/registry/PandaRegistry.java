@@ -16,35 +16,36 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class PandaRegistry {
-	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Reference.MOD_ID);
+	public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Reference.MOD_ID);
 	public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Reference.MOD_ID);
-	public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Reference.MOD_ID);
+	public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Reference.MOD_ID);
 
-	public static final RegistryObject<EntityType<ResourcePandaEntity>> RESOURCE_PANDA = ENTITY_TYPES.register("resource_panda", () ->
+	public static final Supplier<EntityType<ResourcePandaEntity>> RESOURCE_PANDA = ENTITY_TYPES.register("resource_panda", () ->
 			EntityType.Builder.<ResourcePandaEntity>of(ResourcePandaEntity::new, MobCategory.CREATURE)
 					.sized(1.3F, 1.25F).clientTrackingRange(10).build("resource_panda"));
 
-	public static final RegistryObject<Item> RESOURCE_PANDA_SPAWN_EGG = ITEMS.register("resource_panda_spawn_egg", () ->
+	public static final DeferredItem<PandaSpawnEggItem> RESOURCE_PANDA_SPAWN_EGG = ITEMS.register("resource_panda_spawn_egg", () ->
 			new PandaSpawnEggItem(new Item.Properties()));
 
-	public static final RegistryObject<CreativeModeTab> SPAWN_EGGS = CREATIVE_MODE_TABS.register("tab", () -> CreativeModeTab.builder()
+	public static final Supplier<CreativeModeTab> SPAWN_EGGS = CREATIVE_MODE_TABS.register("tab", () -> CreativeModeTab.builder()
 			.icon(() -> new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get()))
 			.withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
 			.title(Component.translatable("itemGroup.resourcepandas:spawn_eggs"))
 			.displayItems((displayParameters, output) -> {
 				ClientLevel level = Objects.requireNonNull(Minecraft.getInstance().level);
-				for (PandaRecipe recipe : level.getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get())) {
+				for (RecipeHolder<PandaRecipe> recipe : level.getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get())) {
 					ItemStack storageItem = new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());
 					CompoundTag tag = storageItem.getTag() == null ? new CompoundTag() : storageItem.getTag();
-					tag.putInt("primaryColor", Integer.decode("0x" + recipe.getHexColor().replaceFirst("#", "")));
-					tag.putString("resourceType", recipe.getId().toString());
+					tag.putInt("primaryColor", Integer.decode("0x" + recipe.value().getHexColor().replaceFirst("#", "")));
+					tag.putString("resourceType", recipe.id().toString());
 					storageItem.setTag(tag);
 
 					output.accept(storageItem);

@@ -26,17 +26,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class ResourcePandaEntity extends Panda {
-	private static final PandaRecipe MISSING_RECIPE = new PandaRecipe(new ResourceLocation(Reference.MOD_ID, "missing"), "Missing", Ingredient.of(Items.EGG), new ItemStack(Items.EGG), "#ffd79a", 1.0F, 2.0F);
+	private static final RecipeHolder<PandaRecipe> MISSING_RECIPE = new RecipeHolder<>(new ResourceLocation(Reference.MOD_ID, "missing"), new PandaRecipe("Missing", Ingredient.of(Items.EGG), new ItemStack(Items.EGG), "#ffd79a", 1.0F, 2.0F));
 
 	private static final EntityDataAccessor<String> RESOURCE_VARIANT = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
 	private static final EntityDataAccessor<String> RESOURCE_COLOR = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
@@ -44,7 +46,7 @@ public class ResourcePandaEntity extends Panda {
 	private static final EntityDataAccessor<String> RESOURCE_NAME = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
 	private static final EntityDataAccessor<Boolean> TRANSFORMED = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.BOOLEAN);
 	private int resourceTransformationTime;
-	private PandaRecipe cachedRecipe;
+	private RecipeHolder<PandaRecipe> cachedRecipe;
 
 	public ResourcePandaEntity(EntityType<? extends ResourcePandaEntity> type, Level level) {
 		super(type, level);
@@ -80,7 +82,7 @@ public class ResourcePandaEntity extends Panda {
 		ItemStack stack = new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());
 		CompoundTag compoundNBT = stack.getOrCreateTag();
 		compoundNBT.putString("resourceType", getResourceVariant().toString());
-		compoundNBT.putInt("primaryColor", Integer.decode("0x" + getPandaRecipe().getHexColor().replaceFirst("#", "")));
+		compoundNBT.putInt("primaryColor", Integer.decode("0x" + getPandaRecipe().value().getHexColor().replaceFirst("#", "")));
 		stack.setTag(compoundNBT);
 		return stack;
 	}
@@ -92,7 +94,7 @@ public class ResourcePandaEntity extends Panda {
 		} else {
 			//Convert old resource panda's
 			setResourceVariant(Reference.MOD_PREFIX + variant);
-			PandaRecipe recipe = getPandaRecipe();
+			PandaRecipe recipe = getPandaRecipe().value();
 			setHexcolor(recipe.getHexColor());
 			setAlpha(recipe.getAlpha());
 			return new ResourceLocation(Reference.MOD_ID, variant);
@@ -199,26 +201,26 @@ public class ResourcePandaEntity extends Panda {
 		this.setTransformed(compound.getBoolean("Transformed"));
 	}
 
-	public PandaRecipe getPandaRecipe() {
-		if (cachedRecipe == null || !cachedRecipe.getId().equals(getResourceVariant())) {
-			List<PandaRecipe> recipes = getCommandSenderWorld().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get());
-			for (PandaRecipe recipe : recipes) {
-				if (recipe.getId().equals(getResourceVariant())) {
-					checkValues(recipe);
+	public RecipeHolder<PandaRecipe> getPandaRecipe() {
+		if (cachedRecipe == null || !cachedRecipe.id().equals(getResourceVariant())) {
+			List<RecipeHolder<PandaRecipe>> recipes = this.level().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get());
+			for (RecipeHolder<PandaRecipe> recipe : recipes) {
+				if (recipe.id().equals(getResourceVariant())) {
+					checkValues(recipe.value());
 					return this.cachedRecipe = recipe;
 				}
 			}
-			checkValues(MISSING_RECIPE);
+			checkValues(MISSING_RECIPE.value());
 			return MISSING_RECIPE;
 		}
 		return this.cachedRecipe;
 	}
 
 	public void refresh() {
-		List<PandaRecipe> recipes = getCommandSenderWorld().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get());
-		for (PandaRecipe recipe : recipes) {
-			if (recipe.getId().equals(getResourceVariant())) {
-				checkValues(recipe);
+		List<RecipeHolder<PandaRecipe>> recipes = this.level().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get());
+		for (RecipeHolder<PandaRecipe> recipe : recipes) {
+			if (recipe.id().equals(getResourceVariant())) {
+				checkValues(recipe.value());
 				break;
 			}
 		}
@@ -245,8 +247,8 @@ public class ResourcePandaEntity extends Panda {
 			}
 		}
 
-		if (!this.level().isClientSide() && this.random.nextFloat() <= getPandaRecipe().getChance() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-			PandaRecipe recipe = getPandaRecipe();
+		if (!this.level().isClientSide() && this.random.nextFloat() <= getPandaRecipe().value().getChance() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+			PandaRecipe recipe = getPandaRecipe().value();
 			this.spawnAtLocation(recipe.getResultItem(this.level().registryAccess()));
 		}
 	}
@@ -265,7 +267,7 @@ public class ResourcePandaEntity extends Panda {
 		}
 
 		panda.hasImpulse = true;
-		net.minecraftforge.common.ForgeHooks.onLivingJump(panda);
+		CommonHooks.onLivingJump(panda);
 	}
 
 	protected float getJumpFactor(Panda panda) {

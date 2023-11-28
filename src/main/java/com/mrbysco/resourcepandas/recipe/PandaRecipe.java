@@ -1,26 +1,25 @@
 package com.mrbysco.resourcepandas.recipe;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipeCodecs;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 
 public class PandaRecipe implements Recipe<Container> {
-	protected final ResourceLocation id;
 	protected final String name;
 	protected final Ingredient ingredient;
 	protected final ItemStack result;
@@ -29,8 +28,7 @@ public class PandaRecipe implements Recipe<Container> {
 	protected final float chance;
 	public ResourcePandaEntity panda = null;
 
-	public PandaRecipe(ResourceLocation id, String name, Ingredient ingredient, ItemStack stack, String hexColor, float alpha, float chance) {
-		this.id = id;
+	public PandaRecipe(String name, Ingredient ingredient, ItemStack stack, String hexColor, float alpha, float chance) {
 		this.name = name;
 		this.ingredient = ingredient;
 		this.result = stack;
@@ -61,11 +59,6 @@ public class PandaRecipe implements Recipe<Container> {
 		return nonnulllist;
 	}
 
-	@Override
-	public ResourceLocation getId() {
-		return id;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -84,10 +77,6 @@ public class PandaRecipe implements Recipe<Container> {
 		return hexColor;
 	}
 
-	public ResourcePandaEntity getResourcePanda() {
-		return com.mrbysco.resourcepandas.client.ClientHelper.getResourcePanda(this);
-	}
-
 	public float getAlpha() {
 		return alpha;
 	}
@@ -101,43 +90,35 @@ public class PandaRecipe implements Recipe<Container> {
 		return PandaRecipes.PANDA_SERIALIZER.get();
 	}
 
-	public static class SerializerPandaRecipe implements RecipeSerializer<PandaRecipe> {
-		@Override
-		public PandaRecipe fromJson(ResourceLocation recipeId, JsonObject jsonObject) {
-			String s = GsonHelper.getAsString(jsonObject, "name", "");
-			JsonElement jsonelement = GsonHelper.isArrayNode(jsonObject, "ingredient") ? GsonHelper.convertToJsonArray(jsonObject, "ingredient") : GsonHelper.getAsJsonObject(jsonObject, "ingredient");
-			Ingredient ingredient = Ingredient.fromJson(jsonelement);
-			//Forge: Check if primitive string to keep vanilla or a object which can contain a count field.
-			ItemStack itemstack;
-			if (jsonObject.get("result").isJsonObject())
-				itemstack = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(jsonObject, "result"));
-			else {
-				String s1 = GsonHelper.getAsString(jsonObject, "result");
-				ResourceLocation resourcelocation = new ResourceLocation(s1);
-				itemstack = new ItemStack(BuiltInRegistries.ITEM.getOptional(resourcelocation).orElseThrow(() -> {
-					return new IllegalStateException("Item: " + s1 + " does not exist");
-				}));
-			}
+	public static class Serializer implements RecipeSerializer<PandaRecipe> {
+		private static final Codec<PandaRecipe> CODEC = PandaRecipe.Serializer.RawPandaRecipe.CODEC.flatXmap(rawLootRecipe -> {
+			return DataResult.success(new PandaRecipe(
+					rawLootRecipe.group,
+					rawLootRecipe.ingredient,
+					rawLootRecipe.result,
+					rawLootRecipe.hexColor,
+					rawLootRecipe.alpha,
+					rawLootRecipe.chance
+			));
+		}, recipe -> {
+			throw new NotImplementedException("Serializing UpgradeRecipe is not implemented yet.");
+		});
 
-			String hex = GsonHelper.getAsString(jsonObject, "hexColor", "#ffffff");
-			if (!hex.startsWith("#") || hex.length() != 7 || !hex.substring(1).matches("[0-9a-fA-F]+")) {
-				throw new IllegalStateException("HexColor: " + hex + " is not a valid hex");
-			}
-			float alpha = GsonHelper.getAsFloat(jsonObject, "alpha", 1.0F);
-			float chance = GsonHelper.getAsFloat(jsonObject, "chance", 1.0F);
-			return new PandaRecipe(recipeId, s, ingredient, itemstack, hex, alpha, chance);
+		@Override
+		public Codec<PandaRecipe> codec() {
+			return CODEC;
 		}
 
 		@Nullable
 		@Override
-		public PandaRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+		public PandaRecipe fromNetwork(FriendlyByteBuf buffer) {
 			String s = buffer.readUtf(32767);
 			Ingredient ingredient = Ingredient.fromNetwork(buffer);
 			ItemStack itemstack = buffer.readItem();
 			String hex = buffer.readUtf(32767);
 			float alpha = buffer.readFloat();
 			float chance = buffer.readFloat();
-			return new PandaRecipe(recipeId, s, ingredient, itemstack, hex, alpha, chance);
+			return new PandaRecipe(s, ingredient, itemstack, hex, alpha, chance);
 		}
 
 		@Override
@@ -148,6 +129,22 @@ public class PandaRecipe implements Recipe<Container> {
 			buffer.writeUtf(recipe.hexColor);
 			buffer.writeFloat(recipe.alpha);
 			buffer.writeFloat(recipe.chance);
+		}
+
+		static record RawPandaRecipe(
+				String group, Ingredient ingredient, ItemStack result, String hexColor, float alpha, float chance
+		) {
+			public static final Codec<RawPandaRecipe> CODEC = RecordCodecBuilder.create(
+					instance -> instance.group(
+									ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(recipe -> recipe.group),
+									Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(recipe -> recipe.ingredient),
+									CraftingRecipeCodecs.ITEMSTACK_OBJECT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+									Codec.STRING.optionalFieldOf("hexColor", "#ffffff").forGetter(recipe -> recipe.hexColor),
+									Codec.FLOAT.optionalFieldOf("alpha", 1.0F).forGetter(recipe -> recipe.alpha),
+									Codec.FLOAT.optionalFieldOf("chance", 1.0F).forGetter(recipe -> recipe.chance)
+							)
+							.apply(instance, RawPandaRecipe::new)
+			);
 		}
 	}
 }

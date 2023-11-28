@@ -3,8 +3,8 @@ package com.mrbysco.resourcepandas.client;
 import com.mrbysco.resourcepandas.client.renderer.ResourcePandaRenderer;
 import com.mrbysco.resourcepandas.item.PandaSpawnEggItem;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 
 public class ClientHandler {
 	public static void registerEntityRenders(EntityRenderersEvent.RegisterRenderers event) {

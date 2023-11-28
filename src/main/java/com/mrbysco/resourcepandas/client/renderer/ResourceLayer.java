@@ -27,7 +27,7 @@ public class ResourceLayer<T extends ResourcePandaEntity, M extends EntityModel<
 			EntityModel<T> entityModel = this.getParentModel();
 			entityModel.prepareMobModel(resourcePanda, limbSwing, limbSwingAmount, partialTicks);
 			this.getParentModel().copyPropertiesTo(entityModel);
-			VertexConsumer ivertexbuilder = bufferSource.getBuffer(RenderType.entityCutoutNoCull(this.overlayLocation));
+			VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(this.overlayLocation));
 			entityModel.setupAnim(resourcePanda, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 			String hexColor = resourcePanda.getHexColor();
 
@@ -50,7 +50,7 @@ public class ResourceLayer<T extends ResourcePandaEntity, M extends EntityModel<
 				green = getGreen(hexColor);
 				blue = getBlue(hexColor);
 			}
-			entityModel.renderToBuffer(poseStack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green, blue, resourcePanda.getAlpha());
+			entityModel.renderToBuffer(poseStack, vertexConsumer, packedLightIn, OverlayTexture.NO_OVERLAY, red, green, blue, resourcePanda.getAlpha());
 		}
 	}
 

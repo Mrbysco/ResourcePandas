@@ -5,13 +5,12 @@ import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import com.mrbysco.resourcepandas.handler.ConversionHandler;
 import com.mrbysco.resourcepandas.recipe.PandaRecipes;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +21,7 @@ public class ResourcePandas {
 	public ResourcePandas() {
 		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-		MinecraftForge.EVENT_BUS.register(new ConversionHandler());
+		NeoForge.EVENT_BUS.register(new ConversionHandler());
 
 		PandaRegistry.ENTITY_TYPES.register(eventBus);
 		PandaRegistry.ITEMS.register(eventBus);
@@ -30,13 +29,12 @@ public class ResourcePandas {
 		PandaRecipes.RECIPE_TYPES.register(eventBus);
 		PandaRecipes.RECIPE_SERIALIZERS.register(eventBus);
 
-		MinecraftForge.EVENT_BUS.register(this);
 		eventBus.addListener(this::registerEntityAttributes);
 
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+		if (FMLEnvironment.dist.isClient()) {
 			eventBus.addListener(ClientHandler::registerEntityRenders);
 			eventBus.addListener(ClientHandler::registerItemColors);
-		});
+		}
 	}
 
 	public void registerEntityAttributes(EntityAttributeCreationEvent event) {

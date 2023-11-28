@@ -18,19 +18,20 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeSpawnEggItem;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class PandaSpawnEggItem extends ForgeSpawnEggItem {
+public class PandaSpawnEggItem extends DeferredSpawnEggItem {
 	public PandaSpawnEggItem(final Properties properties) {
 		super(PandaRegistry.RESOURCE_PANDA, 0, 1776418, properties);
 	}
@@ -51,8 +52,8 @@ public class PandaSpawnEggItem extends ForgeSpawnEggItem {
 					EntityType<ResourcePandaEntity> type = PandaRegistry.RESOURCE_PANDA.get();
 					if (tag.contains("resourceType")) {
 						String resourceType = tag.getString("resourceType");
-						List<PandaRecipe> recipes = new ArrayList<>(level.getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get()));
-						recipes.removeIf((recipe) -> !recipe.getId().equals(ResourceLocation.tryParse(resourceType)));
+						List<RecipeHolder<PandaRecipe>> recipes = new ArrayList<>(level.getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get()));
+						recipes.removeIf((recipe) -> !recipe.id().equals(ResourceLocation.tryParse(resourceType)));
 						ResourcePandaEntity panda = type.create(level);
 						if (panda != null) {
 							initializePanda(level, panda, tag);
@@ -113,6 +114,6 @@ public class PandaSpawnEggItem extends ForgeSpawnEggItem {
 
 	public int getColor(ItemStack stack, int tintIndex) {
 		CompoundTag tag = stack.getTag();
-		return tintIndex == 0 ? (tag != null && tag.contains("primaryColor") ? tag.getInt("primaryColor") : 15198183) : this.highlightColor;
+		return tintIndex == 0 ? (tag != null && tag.contains("primaryColor") ? tag.getInt("primaryColor") : 15198183) : this.getColor(1);
 	}
 }
