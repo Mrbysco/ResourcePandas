@@ -14,5 +14,9 @@ if (System.getenv().CURSEFORGE_KEY) {
             changelog = file("$project.rootDir/changelog.md")
             changelogType = 'markdown'
         }
+
+        relations {
+            optionalDependency "jei"
+        }
     }
 }
