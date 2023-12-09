@@ -91,6 +91,7 @@ public class PandaCategory implements IRecipeCategory<PandaRecipe> {
 
 		// Draw entity name
 		final PoseStack poseStack = guiGraphics.pose();
+		poseStack.pushPose();
 		poseStack.translate(1, 0, 0);
 		Font font = Minecraft.getInstance().font;
 		String text = recipe.getName();
