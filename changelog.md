@@ -1,1 +1,1 @@
-* Fix creative tab ordering
+* Fix JEI support
