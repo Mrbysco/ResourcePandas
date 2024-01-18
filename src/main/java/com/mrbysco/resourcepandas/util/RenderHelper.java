@@ -26,11 +26,9 @@ public class RenderHelper {
 		livingEntity.yHeadRot = livingEntity.getYRot();
 		livingEntity.yHeadRotO = livingEntity.getYRot();
 
-		poseStack.translate(0.0F, livingEntity.getMyRidingOffset(null), 0.0F);
+		poseStack.translate(0.0F, livingEntity.getMyRidingOffset(livingEntity), 0.0F);
 		EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-		Quaternionf quaternionf1 = (new Quaternionf()).rotateX(((float) pitch) * 20.0F * ((float) Math.PI / 180F));
-		quaternionf1.conjugate();
-		entityRenderDispatcher.overrideCameraOrientation(quaternionf1);
+		entityRenderDispatcher.overrideCameraOrientation(new Quaternionf(0.0F, 0.0F, 0.0F, 1.0F));
 		entityRenderDispatcher.setRenderShadow(false);
 		final MultiBufferSource.BufferSource renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
 		RenderSystem.runAsFancy(() -> {

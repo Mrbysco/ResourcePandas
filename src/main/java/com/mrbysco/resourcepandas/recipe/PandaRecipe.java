@@ -3,7 +3,6 @@ package com.mrbysco.resourcepandas.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -26,7 +25,6 @@ public class PandaRecipe implements Recipe<Container> {
 	protected final String hexColor;
 	protected final float alpha;
 	protected final float chance;
-	public ResourcePandaEntity panda = null;
 
 	public PandaRecipe(String name, Ingredient ingredient, ItemStack stack, String hexColor, float alpha, float chance) {
 		this.name = name;
