@@ -1,6 +1,5 @@
 {
   "type": "resourcepandas:panda_recipe",
-  "alpha": 1.0,
   "chance": 0.6,
   "hexColor": "#363636",
   "ingredient": {
@@ -8,6 +7,7 @@
   },
   "name": "Coal",
   "result": {
-    "item": "minecraft:coal"
+    "count": 1,
+    "result": "minecraft:coal"
   }
 }

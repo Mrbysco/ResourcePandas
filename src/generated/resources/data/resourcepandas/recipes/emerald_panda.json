@@ -1,6 +1,5 @@
 {
   "type": "resourcepandas:panda_recipe",
-  "alpha": 1.0,
   "chance": 0.08,
   "hexColor": "#17dd62",
   "ingredient": {
@@ -8,6 +7,7 @@
   },
   "name": "Emerald",
   "result": {
-    "item": "minecraft:emerald"
+    "count": 1,
+    "result": "minecraft:emerald"
   }
 }

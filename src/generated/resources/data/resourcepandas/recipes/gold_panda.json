@@ -1,6 +1,5 @@
 {
   "type": "resourcepandas:panda_recipe",
-  "alpha": 1.0,
   "chance": 0.5,
   "hexColor": "#f8d26a",
   "ingredient": {
@@ -8,6 +7,7 @@
   },
   "name": "Gold",
   "result": {
-    "item": "minecraft:gold_nugget"
+    "count": 1,
+    "result": "minecraft:gold_nugget"
   }
 }

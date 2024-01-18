@@ -1,6 +1,5 @@
 {
   "type": "resourcepandas:panda_recipe",
-  "alpha": 1.0,
   "chance": 0.6,
   "hexColor": "#aa0f01",
   "ingredient": {
@@ -8,6 +7,7 @@
   },
   "name": "Redstone",
   "result": {
-    "item": "minecraft:redstone"
+    "count": 1,
+    "result": "minecraft:redstone"
   }
 }

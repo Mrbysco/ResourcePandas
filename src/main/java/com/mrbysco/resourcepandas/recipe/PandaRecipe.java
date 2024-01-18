@@ -1,21 +1,17 @@
 package com.mrbysco.resourcepandas.recipe;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingRecipeCodecs;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 
 public class PandaRecipe implements Recipe<Container> {
@@ -89,18 +85,17 @@ public class PandaRecipe implements Recipe<Container> {
 	}
 
 	public static class Serializer implements RecipeSerializer<PandaRecipe> {
-		private static final Codec<PandaRecipe> CODEC = PandaRecipe.Serializer.RawPandaRecipe.CODEC.flatXmap(rawLootRecipe -> {
-			return DataResult.success(new PandaRecipe(
-					rawLootRecipe.group,
-					rawLootRecipe.ingredient,
-					rawLootRecipe.result,
-					rawLootRecipe.hexColor,
-					rawLootRecipe.alpha,
-					rawLootRecipe.chance
-			));
-		}, recipe -> {
-			throw new NotImplementedException("Serializing UpgradeRecipe is not implemented yet.");
-		});
+		public static final Codec<PandaRecipe> CODEC = RecordCodecBuilder.create(
+				instance -> instance.group(
+								Codec.STRING.fieldOf("name").forGetter(recipe -> recipe.name),
+								Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(recipe -> recipe.ingredient),
+								ItemStack.RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+								Codec.STRING.optionalFieldOf("hexColor", "#ffffff").forGetter(recipe -> recipe.hexColor),
+								Codec.FLOAT.optionalFieldOf("alpha", 1.0F).forGetter(recipe -> recipe.alpha),
+								Codec.FLOAT.optionalFieldOf("chance", 1.0F).forGetter(recipe -> recipe.chance)
+						)
+						.apply(instance, PandaRecipe::new)
+		);
 
 		@Override
 		public Codec<PandaRecipe> codec() {
@@ -127,22 +122,6 @@ public class PandaRecipe implements Recipe<Container> {
 			buffer.writeUtf(recipe.hexColor);
 			buffer.writeFloat(recipe.alpha);
 			buffer.writeFloat(recipe.chance);
-		}
-
-		static record RawPandaRecipe(
-				String group, Ingredient ingredient, ItemStack result, String hexColor, float alpha, float chance
-		) {
-			public static final Codec<RawPandaRecipe> CODEC = RecordCodecBuilder.create(
-					instance -> instance.group(
-									ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(recipe -> recipe.group),
-									Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(recipe -> recipe.ingredient),
-									CraftingRecipeCodecs.ITEMSTACK_OBJECT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
-									Codec.STRING.optionalFieldOf("hexColor", "#ffffff").forGetter(recipe -> recipe.hexColor),
-									Codec.FLOAT.optionalFieldOf("alpha", 1.0F).forGetter(recipe -> recipe.alpha),
-									Codec.FLOAT.optionalFieldOf("chance", 1.0F).forGetter(recipe -> recipe.chance)
-							)
-							.apply(instance, RawPandaRecipe::new)
-			);
 		}
 	}
 }
