@@ -2,9 +2,7 @@
   "type": "resourcepandas:panda_recipe",
   "chance": 0.6,
   "hexColor": "#aa0f01",
-  "ingredient": {
-    "tag": "c:storage_blocks/redstone"
-  },
+  "ingredient": "#c:storage_blocks/redstone",
   "name": "Redstone",
   "result": {
     "count": 1,

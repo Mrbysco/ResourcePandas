@@ -2,9 +2,7 @@
   "type": "resourcepandas:panda_recipe",
   "chance": 0.11,
   "hexColor": "#a1fbe8",
-  "ingredient": {
-    "tag": "c:storage_blocks/diamond"
-  },
+  "ingredient": "#c:storage_blocks/diamond",
   "name": "Diamond",
   "result": {
     "count": 1,

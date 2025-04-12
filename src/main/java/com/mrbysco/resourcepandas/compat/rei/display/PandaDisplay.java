@@ -1,42 +1,114 @@
 package com.mrbysco.resourcepandas.compat.rei.display;
 
-import com.mrbysco.resourcepandas.compat.rei.REIPlugin;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mrbysco.resourcepandas.compat.rei.PandaREIPlugin;
 import com.mrbysco.resourcepandas.recipe.PandaRecipe;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.Display;
+import me.shedaniel.rei.api.common.display.DisplaySerializer;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PandaDisplay implements Display {
-	private final RecipeHolder<PandaRecipe> recipeHolder;
-	private final List<EntryIngredient> inputEntries;
-	private final List<EntryIngredient> outputEntries;
+	public static final DisplaySerializer<PandaDisplay> SERIALIZER = DisplaySerializer.of(
+			RecordCodecBuilder.mapCodec(instance -> instance.group(
+					EntryIngredient.codec().fieldOf("input").forGetter(d -> d.input),
+					EntryIngredient.codec().fieldOf("output").forGetter(d -> d.output),
+					Codec.STRING.fieldOf("hexColor").forGetter(d -> d.hexColor),
+					Codec.FLOAT.fieldOf("alpha").forGetter(d -> d.alpha),
+					Codec.FLOAT.fieldOf("chance").forGetter(d -> d.chance),
+					ResourceLocation.CODEC.fieldOf("recipeId").forGetter(d -> d.recipeId)
+			).apply(instance, PandaDisplay::new)),
+			StreamCodec.composite(
+					EntryIngredient.streamCodec(),
+					d -> d.input,
+					EntryIngredient.streamCodec(),
+					d -> d.output,
+					ByteBufCodecs.STRING_UTF8,
+					d -> d.hexColor,
+					ByteBufCodecs.FLOAT,
+					d -> d.alpha,
+					ByteBufCodecs.FLOAT,
+					d -> d.chance,
+					ResourceLocation.STREAM_CODEC,
+					d -> d.recipeId,
+					PandaDisplay::new
+			));
+
+	private final EntryIngredient input;
+	private final EntryIngredient output;
+	private final String hexColor;
+	private final float alpha;
+	private final float chance;
+	private final ResourceLocation recipeId;
 
 	public PandaDisplay(RecipeHolder<PandaRecipe> recipeHolder) {
-		this.recipeHolder = recipeHolder;
-		this.inputEntries = EntryIngredients.ofIngredients(recipeHolder.value().getIngredients());
-		this.outputEntries = List.of(EntryIngredients.of(recipeHolder.value().getResultItem(null).copy()));
+		PandaRecipe recipe = recipeHolder.value();
+		this.input = EntryIngredients.ofIngredient(recipe.getIngredient());
+		this.output = EntryIngredients.of(recipe.getResultItem(null).copy());
+		this.hexColor = recipe.getHexColor();
+		this.alpha = recipe.getAlpha();
+		this.chance = recipe.getChance();
+		this.recipeId = recipeHolder.id().location();
 	}
 
-	public RecipeHolder<PandaRecipe> getRecipeHolder() {
-		return recipeHolder;
+	public PandaDisplay(EntryIngredient input, EntryIngredient output, String hexColor, Float alpha, Float chance, ResourceLocation recipeId) {
+		this.input = input;
+		this.output = output;
+		this.hexColor = hexColor;
+		this.alpha = alpha;
+		this.chance = chance;
+		this.recipeId = recipeId;
 	}
 
 	@Override
 	public List<EntryIngredient> getInputEntries() {
-		return this.inputEntries;
+		return List.of(this.input);
 	}
 
 	@Override
 	public List<EntryIngredient> getOutputEntries() {
-		return this.outputEntries;
+		return List.of(this.output);
 	}
 
 	@Override
 	public CategoryIdentifier<?> getCategoryIdentifier() {
-		return REIPlugin.PANDAS;
+		return PandaREIPlugin.PANDAS;
+	}
+
+	@Override
+	public Optional<ResourceLocation> getDisplayLocation() {
+		return Optional.empty();
+	}
+
+	public ResourceLocation getRecipeId() {
+		return recipeId;
+	}
+
+	public String getHexColor() {
+		return hexColor;
+	}
+
+	public float getAlpha() {
+		return alpha;
+	}
+
+	public float getChance() {
+		return chance;
+	}
+
+	@Nullable
+	@Override
+	public DisplaySerializer<? extends Display> getSerializer() {
+		return SERIALIZER;
 	}
 }

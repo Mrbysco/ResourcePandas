@@ -1,6 +1,5 @@
 package com.mrbysco.resourcepandas.util;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
@@ -32,9 +31,12 @@ public class RenderHelper {
 		entityRenderDispatcher.overrideCameraOrientation(new Quaternionf(0.0F, 0.0F, 0.0F, 1.0F));
 		entityRenderDispatcher.setRenderShadow(false);
 		final MultiBufferSource.BufferSource renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
-		RenderSystem.runAsFancy(() -> {
-			entityRenderDispatcher.render(livingEntity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, poseStack, renderTypeBuffer, 15728880);
-		});
+		guiGraphics.drawSpecial(bufferSource ->
+				entityRenderDispatcher.render(
+						livingEntity, 0.0, 0.0, 0.0, 1.0F, guiGraphics.pose(), bufferSource, 15728880
+				)
+		);
+		guiGraphics.flush();
 		renderTypeBuffer.endBatch();
 		entityRenderDispatcher.setRenderShadow(true);
 		poseStack.popPose();

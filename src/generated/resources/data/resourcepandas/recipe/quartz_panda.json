@@ -2,9 +2,7 @@
   "type": "resourcepandas:panda_recipe",
   "chance": 0.6,
   "hexColor": "#ddd4c6",
-  "ingredient": {
-    "item": "minecraft:quartz_block"
-  },
+  "ingredient": "minecraft:quartz_block",
   "name": "Quartz",
   "result": {
     "count": 1,

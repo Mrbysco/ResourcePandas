@@ -7,18 +7,21 @@ import com.mrbysco.resourcepandas.recipe.PandaRecipes;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -31,15 +34,16 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.Collection;
 
 public class ResourcePandaEntity extends Panda {
-	private static final RecipeHolder<PandaRecipe> MISSING_RECIPE = new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "missing"), new PandaRecipe("Missing", Ingredient.of(Items.EGG), new ItemStack(Items.EGG), "#ffd79a", 1.0F, 2.0F));
+	private static final RecipeHolder<PandaRecipe> MISSING_RECIPE = new RecipeHolder<>(
+			ResourceKey.create(Registries.RECIPE, Reference.modLoc("missing")),
+			new PandaRecipe("Missing", Ingredient.of(Items.EGG), new ItemStack(Items.EGG), "#ffd79a", 1.0F, 2.0F));
 
 	private static final EntityDataAccessor<String> RESOURCE_VARIANT = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
 	private static final EntityDataAccessor<String> RESOURCE_COLOR = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
@@ -78,9 +82,10 @@ public class ResourcePandaEntity extends Panda {
 		return !this.hasCustomName() ? Component.literal(String.format("%s", this.getResourceName())).append(super.getName()) : super.getName();
 	}
 
+	@Nullable
 	@Override
-	public ItemStack getPickedResult(HitResult target) {
-		ItemStack stack = new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());
+	public ItemStack getPickResult() {
+		ItemStack stack = PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.toStack();
 		stack.set(PandaDataComponents.RESOURCE_TYPE, getResourceVariant());
 		stack.set(PandaDataComponents.COLOR, Integer.decode("0x" + getPandaRecipe().value().getHexColor().replaceFirst("#", "")));
 		return stack;
@@ -201,26 +206,31 @@ public class ResourcePandaEntity extends Panda {
 	}
 
 	public RecipeHolder<PandaRecipe> getPandaRecipe() {
-		if (cachedRecipe == null || !cachedRecipe.id().equals(getResourceVariant())) {
-			List<RecipeHolder<PandaRecipe>> recipes = this.level().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get());
-			for (RecipeHolder<PandaRecipe> recipe : recipes) {
-				if (recipe.id().equals(getResourceVariant())) {
-					checkValues(recipe.value());
-					return this.cachedRecipe = recipe;
+		if (this.level() instanceof ServerLevel serverLevel) {
+			if (cachedRecipe == null || !cachedRecipe.id().location().equals(getResourceVariant())) {
+				Collection<RecipeHolder<PandaRecipe>> recipes = serverLevel.recipeAccess().recipeMap().byType(PandaRecipes.PANDA_RECIPE_TYPE.get());
+				for (RecipeHolder<PandaRecipe> recipe : recipes) {
+					if (recipe.id().equals(getResourceVariant())) {
+						checkValues(recipe.value());
+						return this.cachedRecipe = recipe;
+					}
 				}
+				checkValues(MISSING_RECIPE.value());
+				return MISSING_RECIPE;
 			}
-			checkValues(MISSING_RECIPE.value());
-			return MISSING_RECIPE;
+			return this.cachedRecipe;
 		}
-		return this.cachedRecipe;
+		return null;
 	}
 
 	public void refresh() {
-		List<RecipeHolder<PandaRecipe>> recipes = this.level().getRecipeManager().getAllRecipesFor(PandaRecipes.PANDA_RECIPE_TYPE.get());
-		for (RecipeHolder<PandaRecipe> recipe : recipes) {
-			if (recipe.id().equals(getResourceVariant())) {
-				checkValues(recipe.value());
-				break;
+		if (this.level() instanceof ServerLevel serverLevel) {
+			Collection<RecipeHolder<PandaRecipe>> recipes = serverLevel.recipeAccess().recipeMap().byType(PandaRecipes.PANDA_RECIPE_TYPE.get());
+			for (RecipeHolder<PandaRecipe> recipe : recipes) {
+				if (recipe.id().location().equals(getResourceVariant())) {
+					checkValues(recipe.value());
+					break;
+				}
 			}
 		}
 	}
@@ -246,9 +256,10 @@ public class ResourcePandaEntity extends Panda {
 			}
 		}
 
-		if (!this.level().isClientSide() && this.random.nextFloat() <= getPandaRecipe().value().getChance() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+		if (this.level() instanceof ServerLevel serverLevel && this.random.nextFloat() <= getPandaRecipe().value().getChance() &&
+				serverLevel.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
 			PandaRecipe recipe = getPandaRecipe().value();
-			this.spawnAtLocation(recipe.getResultItem(this.level().registryAccess()));
+			this.spawnAtLocation(serverLevel, recipe.getResultItem(this.level().registryAccess()));
 		}
 	}
 
@@ -281,11 +292,11 @@ public class ResourcePandaEntity extends Panda {
 
 	@Nullable
 	@Override
-	public SpawnGroupData finalizeSpawn(ServerLevelAccessor levelAccessor, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn) {
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor levelAccessor, DifficultyInstance difficultyIn, EntitySpawnReason reason, @Nullable SpawnGroupData spawnDataIn) {
 		SpawnGroupData entityData = super.finalizeSpawn(levelAccessor, difficultyIn, reason, spawnDataIn);
 		this.setMainGene(Gene.WEAK);
 		this.setHiddenGene(Gene.WEAK);
-		if (reason == MobSpawnType.SPAWN_EGG || reason == MobSpawnType.SPAWNER) {
+		if (reason == EntitySpawnReason.SPAWN_ITEM_USE || reason == EntitySpawnReason.SPAWNER) {
 			setTransformed(true);
 		} else {
 			this.startTransforming(300);

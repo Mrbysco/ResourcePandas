@@ -10,9 +10,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -20,16 +21,15 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
 
-public class PandaSpawnEggItem extends DeferredSpawnEggItem {
+public class PandaSpawnEggItem extends SpawnEggItem {
 	public PandaSpawnEggItem(final Properties properties) {
-		super(PandaRegistry.RESOURCE_PANDA, 0, 1776418, properties);
+		super(PandaRegistry.RESOURCE_PANDA.get(), properties);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class PandaSpawnEggItem extends DeferredSpawnEggItem {
 				if (blockentity instanceof SpawnerBlockEntity spawnerblockentity) {
 					EntityType<ResourcePandaEntity> type = PandaRegistry.RESOURCE_PANDA.get();
 					if (resourceType != null) {
-						ResourcePandaEntity panda = type.create(level);
+						ResourcePandaEntity panda = type.create(level, EntitySpawnReason.SPAWN_ITEM_USE);
 						if (panda != null) {
 							initializePanda(panda, resourceType);
 						} else {
@@ -73,7 +73,7 @@ public class PandaSpawnEggItem extends DeferredSpawnEggItem {
 			}
 
 			EntityType<ResourcePandaEntity> type = PandaRegistry.RESOURCE_PANDA.get();
-			ResourcePandaEntity panda = type.spawn((ServerLevel) level, itemstack, context.getPlayer(), pos2, MobSpawnType.SPAWN_EGG, true, !Objects.equals(blockpos, pos2) && direction == Direction.UP);
+			ResourcePandaEntity panda = type.spawn((ServerLevel) level, itemstack, context.getPlayer(), pos2, EntitySpawnReason.SPAWN_ITEM_USE, true, !Objects.equals(blockpos, pos2) && direction == Direction.UP);
 			if (panda != null) {
 				initializePanda(panda, resourceType);
 				itemstack.shrink(1);
@@ -105,6 +105,6 @@ public class PandaSpawnEggItem extends DeferredSpawnEggItem {
 	}
 
 	public int getColor(ItemStack stack, int tintIndex) {
-		return tintIndex == 0 ? stack.getOrDefault(PandaDataComponents.COLOR, 15198183) : this.getColor(1);
+		return tintIndex == 0 ? stack.getOrDefault(PandaDataComponents.COLOR, 15198183) : 0;
 	}
 }

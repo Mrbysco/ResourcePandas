@@ -1,7 +1,7 @@
 package com.mrbysco.resourcepandas.compat.rei.category;
 
 import com.mrbysco.resourcepandas.client.ClientHelper;
-import com.mrbysco.resourcepandas.compat.rei.REIPlugin;
+import com.mrbysco.resourcepandas.compat.rei.PandaREIPlugin;
 import com.mrbysco.resourcepandas.compat.rei.display.PandaDisplay;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
@@ -20,9 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PandaCategory implements DisplayCategory<PandaDisplay> {
+
 	@Override
 	public CategoryIdentifier<? extends PandaDisplay> getCategoryIdentifier() {
-		return REIPlugin.PANDAS;
+		return PandaREIPlugin.PANDAS;
 	}
 
 	@Override
@@ -32,7 +33,7 @@ public class PandaCategory implements DisplayCategory<PandaDisplay> {
 
 	@Override
 	public Renderer getIcon() {
-		return EntryStacks.of(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());
+		return EntryStacks.of(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.asItem());
 	}
 
 	@Override
@@ -41,7 +42,7 @@ public class PandaCategory implements DisplayCategory<PandaDisplay> {
 		List<Widget> widgets = new ArrayList<>();
 		widgets.add(Widgets.createRecipeBase(bounds));
 		widgets.add(Widgets.withTranslate(Widgets.createDrawableWidget((guiGraphics, mouseX, mouseY, v) -> {
-			ResourcePandaEntity panda = ClientHelper.getResourcePanda(display.getRecipeHolder());
+			ResourcePandaEntity panda = ClientHelper.getResourcePanda(display.getRecipeId(), display.getHexColor(), display.getAlpha());
 			if (panda != null) {
 				// Draw entity
 				RenderHelper.renderEntity(guiGraphics, 46, 52, 20.0F, 38 - mouseX, 80 - mouseY, panda);

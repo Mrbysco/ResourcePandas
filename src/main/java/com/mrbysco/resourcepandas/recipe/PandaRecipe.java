@@ -9,11 +9,16 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 public class PandaRecipe implements Recipe<SingleRecipeInput> {
 	protected final String name;
@@ -33,8 +38,23 @@ public class PandaRecipe implements Recipe<SingleRecipeInput> {
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<PandaRecipe> getType() {
 		return PandaRecipes.PANDA_RECIPE_TYPE.get();
+	}
+
+	@Override
+	public boolean isSpecial() {
+		return true;
+	}
+
+	@Override
+	public PlacementInfo placementInfo() {
+		return PlacementInfo.NOT_PLACEABLE;
+	}
+
+	@Override
+	public RecipeBookCategory recipeBookCategory() {
+		return RecipeBookCategories.CRAFTING_MISC;
 	}
 
 	@Override
@@ -47,7 +67,10 @@ public class PandaRecipe implements Recipe<SingleRecipeInput> {
 		return getResultItem(provider);
 	}
 
-	@Override
+	public Ingredient getIngredient() {
+		return this.ingredient;
+	}
+
 	public NonNullList<Ingredient> getIngredients() {
 		NonNullList<Ingredient> nonnulllist = NonNullList.create();
 		nonnulllist.add(this.ingredient);
@@ -58,15 +81,15 @@ public class PandaRecipe implements Recipe<SingleRecipeInput> {
 		return name;
 	}
 
-	@Override
+//	@Override
 	public ItemStack getResultItem(HolderLookup.Provider provider) {
 		return this.result.copy();
 	}
-
-	@Override
-	public boolean canCraftInDimensions(int x, int y) {
-		return false;
-	}
+//
+//	@Override
+//	public boolean canCraftInDimensions(int x, int y) {
+//		return false;
+//	}
 
 	public String getHexColor() {
 		return hexColor;
@@ -81,7 +104,7 @@ public class PandaRecipe implements Recipe<SingleRecipeInput> {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<PandaRecipe> getSerializer() {
 		return PandaRecipes.PANDA_SERIALIZER.get();
 	}
 
@@ -89,7 +112,7 @@ public class PandaRecipe implements Recipe<SingleRecipeInput> {
 		public static final MapCodec<PandaRecipe> CODEC = RecordCodecBuilder.mapCodec(
 				instance -> instance.group(
 								Codec.STRING.fieldOf("name").forGetter(recipe -> recipe.name),
-								Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(recipe -> recipe.ingredient),
+								Ingredient.CODEC.fieldOf("ingredient").forGetter(recipe -> recipe.ingredient),
 								ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
 								Codec.STRING.optionalFieldOf("hexColor", "#ffffff").forGetter(recipe -> recipe.hexColor),
 								Codec.FLOAT.optionalFieldOf("alpha", 1.0F).forGetter(recipe -> recipe.alpha),

@@ -1,0 +1,16 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "minecraft:item/template_spawn_egg",
+    "tints": [
+      {
+        "type": "resourcepandas:resource_color",
+        "default": -13083194
+      },
+      {
+        "type": "minecraft:constant",
+        "value": -15000798
+      }
+    ]
+  }
+}

@@ -2,9 +2,7 @@
   "type": "resourcepandas:panda_recipe",
   "chance": 0.6,
   "hexColor": "#345ec3",
-  "ingredient": {
-    "tag": "c:storage_blocks/lapis"
-  },
+  "ingredient": "#c:storage_blocks/lapis",
   "name": "Lapis",
   "result": {
     "count": 1,

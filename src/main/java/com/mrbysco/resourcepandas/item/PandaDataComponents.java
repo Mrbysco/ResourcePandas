@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public class PandaDataComponents {
 	public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, Reference.MOD_ID);
 
-	public static final Supplier<DataComponentType<Integer>> COLOR = DATA_COMPONENT_TYPES.register("color", () ->
+	public static final Supplier<DataComponentType<Integer>> COLOR = DATA_COMPONENT_TYPES.register("default_color", () ->
 			DataComponentType.<Integer>builder()
 					.persistent(Codec.INT)
 					.networkSynchronized(ByteBufCodecs.INT)

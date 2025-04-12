@@ -2,9 +2,7 @@
   "type": "resourcepandas:panda_recipe",
   "chance": 0.06,
   "hexColor": "#4c4143",
-  "ingredient": {
-    "tag": "c:storage_blocks/netherite"
-  },
+  "ingredient": "#c:storage_blocks/netherite",
   "name": "Netherite",
   "result": {
     "count": 1,

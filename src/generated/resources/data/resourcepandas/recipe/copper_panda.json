@@ -2,9 +2,7 @@
   "type": "resourcepandas:panda_recipe",
   "chance": 0.6,
   "hexColor": "#e77c56",
-  "ingredient": {
-    "tag": "c:storage_blocks/copper"
-  },
+  "ingredient": "#c:storage_blocks/copper",
   "name": "Copper",
   "result": {
     "count": 1,

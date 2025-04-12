@@ -2,9 +2,7 @@
   "type": "resourcepandas:panda_recipe",
   "chance": 0.5,
   "hexColor": "#f8d26a",
-  "ingredient": {
-    "tag": "c:storage_blocks/gold"
-  },
+  "ingredient": "#c:storage_blocks/gold",
   "name": "Gold",
   "result": {
     "count": 1,

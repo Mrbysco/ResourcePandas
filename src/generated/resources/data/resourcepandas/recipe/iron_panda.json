@@ -2,9 +2,7 @@
   "type": "resourcepandas:panda_recipe",
   "chance": 0.6,
   "hexColor": "#d9dfe7",
-  "ingredient": {
-    "tag": "c:storage_blocks/iron"
-  },
+  "ingredient": "#c:storage_blocks/iron",
   "name": "Iron",
   "result": {
     "count": 1,
