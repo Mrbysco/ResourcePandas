@@ -75,7 +75,7 @@ public class ResourcePandaEntity extends Panda {
 
 	@Override
 	public Component getName() {
-		return !this.hasCustomName() ? Component.literal(String.format("%s ", this.getResourceName())).append(super.getName()) : super.getName();
+		return !this.hasCustomName() ? Component.literal(String.format("%s", this.getResourceName())).append(super.getName()) : super.getName();
 	}
 
 	@Override
