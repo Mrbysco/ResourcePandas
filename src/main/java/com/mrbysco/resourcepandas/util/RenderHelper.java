@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.joml.Quaternionf;
 
 public class RenderHelper {
+	@SuppressWarnings("deprecation")
 	public static void renderEntity(GuiGraphics guiGraphics, int x, int y, double scale, double yaw, double pitch, LivingEntity livingEntity) {
 		if (livingEntity.level() == null) return;
 		final PoseStack poseStack = guiGraphics.pose();

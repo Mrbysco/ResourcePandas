@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class ResourcePandaRenderer extends PandaRenderer {
 	private static final ResourceLocation OVERLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/entity/panda/resource_overlay.png");
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public ResourcePandaRenderer(EntityRendererProvider.Context context) {
 		super(context);
 		this.addLayer(new ResourceLayer(this, OVERLAY_TEXTURE));
