@@ -8,9 +8,10 @@ import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import com.mrbysco.resourcepandas.recipe.PandaRecipe;
 import com.mrbysco.resourcepandas.util.RenderHelper;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -27,8 +28,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
-
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>> {
 	protected static final int X_FIRST_ITEM = 0;
@@ -56,8 +56,13 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 	}
 
 	@Override
-	public IDrawable getBackground() {
-		return background;
+	public int getWidth() {
+		return 72;
+	}
+
+	@Override
+	public int getHeight() {
+		return 62;
 	}
 
 	@Override
@@ -75,13 +80,16 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 		}
 		RegistryAccess registryAccess = level.registryAccess();
 
-		builder.addSlot(RecipeIngredientRole.INPUT, X_FIRST_ITEM, Y_ITEM_DISTANCE).addIngredients(recipe.getIngredients().getFirst());
-		builder.addSlot(RecipeIngredientRole.OUTPUT, X_OUTPUT_ITEM, Y_ITEM_DISTANCE).addItemStack(recipe.getResultItem(registryAccess)).addTooltipCallback(new OutputTooltip(recipe));
+		builder.addSlot(RecipeIngredientRole.INPUT, X_FIRST_ITEM, Y_ITEM_DISTANCE)
+				.addIngredients(recipe.getIngredients().getFirst());
+		builder.addSlot(RecipeIngredientRole.OUTPUT, X_OUTPUT_ITEM, Y_ITEM_DISTANCE)
+				.addItemStack(recipe.getResultItem(registryAccess))
+				.addRichTooltipCallback(new OutputTooltip(recipe));
 	}
 
 	@Override
 	public void draw(RecipeHolder<PandaRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		IRecipeCategory.super.draw(recipeHolder, recipeSlotsView, guiGraphics, mouseX, mouseY);
+		this.background.draw(guiGraphics);
 		PandaRecipe recipe = recipeHolder.value();
 
 		// Draw entity
@@ -102,7 +110,7 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 		poseStack.popPose();
 	}
 
-	public static class OutputTooltip implements IRecipeSlotTooltipCallback {
+	public static class OutputTooltip implements IRecipeSlotRichTooltipCallback {
 		private final PandaRecipe recipe;
 
 		public OutputTooltip(PandaRecipe recipe) {
@@ -110,7 +118,7 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 		}
 
 		@Override
-		public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
+		public void onRichTooltip(@NotNull IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
 			tooltip.add(Component.translatable("resourcepandas.gui.jei.pandas.tooltip", (int) (100 * recipe.getChance())).withStyle(ChatFormatting.YELLOW));
 		}
 	}
