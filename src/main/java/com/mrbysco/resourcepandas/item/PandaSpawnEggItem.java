@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -31,6 +32,8 @@ public class PandaSpawnEggItem extends DeferredSpawnEggItem {
 		super(PandaRegistry.RESOURCE_PANDA, 0, 1776418, properties);
 	}
 
+	@Override
+	@NotNull
 	public InteractionResult useOn(UseOnContext context) {
 		Level level = context.getLevel();
 		if (!(level instanceof ServerLevel)) {
@@ -70,7 +73,7 @@ public class PandaSpawnEggItem extends DeferredSpawnEggItem {
 			}
 
 			EntityType<ResourcePandaEntity> type = PandaRegistry.RESOURCE_PANDA.get();
-			ResourcePandaEntity panda = (ResourcePandaEntity) type.spawn((ServerLevel) level, itemstack, context.getPlayer(), pos2, MobSpawnType.SPAWN_EGG, true, !Objects.equals(blockpos, pos2) && direction == Direction.UP);
+			ResourcePandaEntity panda = type.spawn((ServerLevel) level, itemstack, context.getPlayer(), pos2, MobSpawnType.SPAWN_EGG, true, !Objects.equals(blockpos, pos2) && direction == Direction.UP);
 			if (panda != null) {
 				initializePanda(panda, resourceType);
 				itemstack.shrink(1);
@@ -80,17 +83,16 @@ public class PandaSpawnEggItem extends DeferredSpawnEggItem {
 		}
 	}
 
-	public ResourcePandaEntity initializePanda(ResourcePandaEntity panda, @Nullable ResourceLocation resourceType) {
+	public void initializePanda(ResourcePandaEntity panda, @Nullable ResourceLocation resourceType) {
 		if (resourceType != null) {
 			panda.setResourceVariant(resourceType.toString());
 			panda.refresh();
 		}
-		return panda;
 	}
 
 
 	@Override
-	public void appendHoverText(ItemStack stack, TooltipContext pContext, List<Component> tooltip, TooltipFlag flagIn) {
+	public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext pContext, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
 		super.appendHoverText(stack, pContext, tooltip, flagIn);
 		ResourceLocation resourceType = stack.get(PandaDataComponents.RESOURCE_TYPE);
 		if (resourceType != null) {
@@ -103,6 +105,6 @@ public class PandaSpawnEggItem extends DeferredSpawnEggItem {
 	}
 
 	public int getColor(ItemStack stack, int tintIndex) {
-		return tintIndex == 0 ? (stack.has(PandaDataComponents.COLOR) ? stack.get(PandaDataComponents.COLOR) : 15198183) : this.getColor(1);
+		return tintIndex == 0 ? stack.getOrDefault(PandaDataComponents.COLOR, 15198183) : this.getColor(1);
 	}
 }
