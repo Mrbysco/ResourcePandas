@@ -162,7 +162,7 @@ if (System.getenv().CURSEFORGE_KEY) {
         mainFile.changelog = file("$project.rootDir/changelog.md")
         mainFile.changelogType = 'markdown'
 
-        mainFile.addOptional("jei", "roughly-enough-items")
+        mainFile.addOptional(/*"jei", */"roughly-enough-items")
     }
 }
 
@@ -179,7 +179,7 @@ if (System.getenv().MODRINTH_KEY) {
         loaders = ["neoforge"]
 
         dependencies {
-            optional.project("jei", "rei")
+            optional.project(/*"jei", */"rei")
         }
     }
 }
