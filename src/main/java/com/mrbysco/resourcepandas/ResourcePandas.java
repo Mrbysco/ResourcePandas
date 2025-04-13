@@ -13,7 +13,6 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -60,8 +59,6 @@ public class ResourcePandas {
 					event.accept(storageItem);
 				}
 			}
-			LOGGER.info("Environment: {}", ServerLifecycleHooks.getCurrentServer());
-			LOGGER.info("IS SERVER {}", FMLEnvironment.dist.isDedicatedServer());
 		}
 	}
 }
