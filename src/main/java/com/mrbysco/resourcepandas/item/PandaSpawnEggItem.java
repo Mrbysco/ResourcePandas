@@ -85,8 +85,7 @@ public class PandaSpawnEggItem extends SpawnEggItem {
 
 	public void initializePanda(ResourcePandaEntity panda, @Nullable ResourceLocation resourceType) {
 		if (resourceType != null) {
-			panda.setResourceVariant(resourceType.toString());
-			panda.refresh();
+			panda.setResourceDataById(resourceType);
 		}
 	}
 

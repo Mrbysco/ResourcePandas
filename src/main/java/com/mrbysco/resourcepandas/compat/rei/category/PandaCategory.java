@@ -42,7 +42,7 @@ public class PandaCategory implements DisplayCategory<PandaDisplay> {
 		List<Widget> widgets = new ArrayList<>();
 		widgets.add(Widgets.createRecipeBase(bounds));
 		widgets.add(Widgets.withTranslate(Widgets.createDrawableWidget((guiGraphics, mouseX, mouseY, v) -> {
-			ResourcePandaEntity panda = ClientHelper.getResourcePanda(display.getRecipeId(), display.getHexColor(), display.getAlpha());
+			ResourcePandaEntity panda = ClientHelper.getResourcePanda(display.getRecipeId());
 			if (panda != null) {
 				// Draw entity
 				RenderHelper.renderEntity(guiGraphics, 46, 52, 20.0F, 38 - mouseX, 80 - mouseY, panda);

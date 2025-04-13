@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
@@ -17,8 +16,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
-
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class PandaRecipe implements Recipe<SingleRecipeInput> {
 	protected final String name;
@@ -38,6 +36,7 @@ public class PandaRecipe implements Recipe<SingleRecipeInput> {
 	}
 
 	@Override
+	@NotNull
 	public RecipeType<PandaRecipe> getType() {
 		return PandaRecipes.PANDA_RECIPE_TYPE.get();
 	}
@@ -48,48 +47,39 @@ public class PandaRecipe implements Recipe<SingleRecipeInput> {
 	}
 
 	@Override
+	@NotNull
 	public PlacementInfo placementInfo() {
 		return PlacementInfo.NOT_PLACEABLE;
 	}
 
 	@Override
+	@NotNull
 	public RecipeBookCategory recipeBookCategory() {
 		return RecipeBookCategories.CRAFTING_MISC;
 	}
 
 	@Override
-	public boolean matches(SingleRecipeInput inv, Level level) {
+	public boolean matches(SingleRecipeInput inv, @NotNull Level level) {
 		return this.ingredient.test(inv.getItem(0));
 	}
 
 	@Override
-	public ItemStack assemble(SingleRecipeInput inventory, HolderLookup.Provider provider) {
-		return getResultItem(provider);
+	@NotNull
+	public ItemStack assemble(@NotNull SingleRecipeInput inventory, @NotNull HolderLookup.Provider provider) {
+		return getResult();
 	}
 
 	public Ingredient getIngredient() {
 		return this.ingredient;
 	}
 
-	public NonNullList<Ingredient> getIngredients() {
-		NonNullList<Ingredient> nonnulllist = NonNullList.create();
-		nonnulllist.add(this.ingredient);
-		return nonnulllist;
-	}
-
 	public String getName() {
 		return name;
 	}
 
-//	@Override
-	public ItemStack getResultItem(HolderLookup.Provider provider) {
-		return this.result.copy();
+	public ItemStack getResult() {
+		return result.copy();
 	}
-//
-//	@Override
-//	public boolean canCraftInDimensions(int x, int y) {
-//		return false;
-//	}
 
 	public String getHexColor() {
 		return hexColor;
@@ -104,6 +94,7 @@ public class PandaRecipe implements Recipe<SingleRecipeInput> {
 	}
 
 	@Override
+	@NotNull
 	public RecipeSerializer<PandaRecipe> getSerializer() {
 		return PandaRecipes.PANDA_SERIALIZER.get();
 	}
@@ -125,11 +116,13 @@ public class PandaRecipe implements Recipe<SingleRecipeInput> {
 		);
 
 		@Override
+		@NotNull
 		public MapCodec<PandaRecipe> codec() {
 			return CODEC;
 		}
 
 		@Override
+		@NotNull
 		public StreamCodec<RegistryFriendlyByteBuf, PandaRecipe> streamCodec() {
 			return STREAM_CODEC;
 		}

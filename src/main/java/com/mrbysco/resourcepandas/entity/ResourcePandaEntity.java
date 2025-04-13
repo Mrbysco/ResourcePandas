@@ -5,6 +5,7 @@ import com.mrbysco.resourcepandas.item.PandaDataComponents;
 import com.mrbysco.resourcepandas.recipe.PandaRecipe;
 import com.mrbysco.resourcepandas.recipe.PandaRecipes;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
+import com.mrbysco.resourcepandas.util.ResourceData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -19,6 +20,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
@@ -39,16 +41,14 @@ import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public class ResourcePandaEntity extends Panda {
 	private static final RecipeHolder<PandaRecipe> MISSING_RECIPE = new RecipeHolder<>(
 			ResourceKey.create(Registries.RECIPE, Reference.modLoc("missing")),
 			new PandaRecipe("Missing", Ingredient.of(Items.EGG), new ItemStack(Items.EGG), "#ffd79a", 1.0F, 2.0F));
 
-	private static final EntityDataAccessor<String> RESOURCE_VARIANT = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
-	private static final EntityDataAccessor<String> RESOURCE_COLOR = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
-	private static final EntityDataAccessor<Float> RESOURCE_ALPHA = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.FLOAT);
-	private static final EntityDataAccessor<String> RESOURCE_NAME = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.STRING);
+	private static final EntityDataAccessor<Optional<ResourceData>> RESOURCE_DATA = SynchedEntityData.defineId(ResourcePandaEntity.class, PandaRegistry.RESOURCE_DATA.get());
 	private static final EntityDataAccessor<Boolean> TRANSFORMED = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.BOOLEAN);
 	private int resourceTransformationTime;
 	private RecipeHolder<PandaRecipe> cachedRecipe;
@@ -70,10 +70,7 @@ public class ResourcePandaEntity extends Panda {
 	@Override
 	protected void defineSynchedData(SynchedEntityData.Builder builder) {
 		super.defineSynchedData(builder);
-		builder.define(RESOURCE_VARIANT, "");
-		builder.define(RESOURCE_COLOR, "#FFFFFF");
-		builder.define(RESOURCE_ALPHA, 1.0F);
-		builder.define(RESOURCE_NAME, "");
+		builder.define(RESOURCE_DATA, Optional.empty());
 		builder.define(TRANSFORMED, false);
 	}
 
@@ -86,44 +83,42 @@ public class ResourcePandaEntity extends Panda {
 	@Override
 	public ItemStack getPickResult() {
 		ItemStack stack = PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.toStack();
-		stack.set(PandaDataComponents.RESOURCE_TYPE, getResourceVariant());
-		stack.set(PandaDataComponents.COLOR, Integer.decode("0x" + getPandaRecipe().value().getHexColor().replaceFirst("#", "")));
+		Optional<ResourceData> optionalData = getResourceData();
+		if (optionalData.isPresent()) {
+			stack.set(PandaDataComponents.RESOURCE_TYPE, optionalData.get().id());
+			stack.set(PandaDataComponents.COLOR, Integer.decode("0x" + optionalData.get().hexColor().replaceFirst("#", "")));
+		} else {
+			stack.set(PandaDataComponents.COLOR, Integer.decode("0x" + ResourceData.MISSING.hexColor().replaceFirst("#", "")));
+		}
 		return stack;
 	}
 
-	public ResourceLocation getResourceVariant() {
-		String variant = this.entityData.get(RESOURCE_VARIANT);
-		if (variant.contains(":")) {
-			return ResourceLocation.tryParse(variant);
-		} else {
-			//Convert old resource panda's
-			setResourceVariant(Reference.MOD_PREFIX + variant);
-			PandaRecipe recipe = getPandaRecipe().value();
-			setHexcolor(recipe.getHexColor());
-			setAlpha(recipe.getAlpha());
-			return ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, variant);
+	public Optional<ResourceData> getResourceData() {
+		return this.entityData.get(RESOURCE_DATA);
+	}
+
+	public void setResourceDataById(ResourceLocation variant) {
+		RecipeHolder<PandaRecipe> recipeHolder = getRecipeFromID(variant);
+		if (recipeHolder != null) {
+			this.setResourceData(ResourceData.fromRecipe(recipeHolder));
 		}
 	}
 
-	public void setResourceVariant(String variant) {
-		this.entityData.set(RESOURCE_VARIANT, variant);
-		refresh();
+	public void setResourceData(@Nullable ResourceData data) {
+		if (data == null) {
+			this.entityData.set(RESOURCE_DATA, Optional.empty());
+		} else {
+			this.entityData.set(RESOURCE_DATA, Optional.of(data));
+		}
+		this.getPandaRecipe(); //Call to cache the recipe
 	}
 
 	public String getHexColor() {
-		return this.entityData.get(RESOURCE_COLOR);
-	}
-
-	public void setHexcolor(String hex) {
-		this.entityData.set(RESOURCE_COLOR, hex);
+		return getResourceData().map(ResourceData::hexColor).orElse("#FFFFFF");
 	}
 
 	public float getAlpha() {
-		return this.entityData.get(RESOURCE_ALPHA);
-	}
-
-	public void setAlpha(float alpha) {
-		this.entityData.set(RESOURCE_ALPHA, alpha);
+		return getResourceData().map(ResourceData::alpha).orElse(1.0F);
 	}
 
 	public boolean isTransformed() {
@@ -131,11 +126,7 @@ public class ResourcePandaEntity extends Panda {
 	}
 
 	public String getResourceName() {
-		return this.entityData.get(RESOURCE_NAME);
-	}
-
-	public void setResourceName(String name) {
-		this.entityData.set(RESOURCE_NAME, name);
+		return getResourceData().map(ResourceData::name).orElse("");
 	}
 
 	public void setTransformed(Boolean transformed) {
@@ -159,7 +150,7 @@ public class ResourcePandaEntity extends Panda {
 	}
 
 	public boolean hasResourceVariant() {
-		return getResourceVariant() != null;
+		return getResourceData().isPresent();
 	}
 
 	@Override
@@ -188,60 +179,56 @@ public class ResourcePandaEntity extends Panda {
 	@Override
 	public void addAdditionalSaveData(CompoundTag compound) {
 		super.addAdditionalSaveData(compound);
-		compound.putString("ResourceVariant", this.getResourceVariant().toString());
-		compound.putString("ResourceName", this.getResourceName());
-		compound.putString("ResourceHex", this.getHexColor());
-		compound.putFloat("ResourceAlpha", this.getAlpha());
+		if (this.getResourceData().isPresent()) {
+			this.getResourceData().get().saveToTag(compound);
+		}
 		compound.putBoolean("Transformed", this.isTransformed());
 	}
 
 	@Override
 	public void readAdditionalSaveData(CompoundTag compound) {
 		super.readAdditionalSaveData(compound);
-		this.setResourceVariant(compound.getString("ResourceVariant"));
-		this.setResourceName(compound.getString("ResourceName"));
-		this.setHexcolor(compound.getString("ResourceHex"));
-		this.setAlpha(compound.getFloat("ResourceAlpha"));
+		if (compound.contains("resource_data")) {
+			this.setResourceData(ResourceData.fromTag(compound));
+		} else {
+			this.setResourceData(null);
+		}
 		this.setTransformed(compound.getBoolean("Transformed"));
 	}
 
 	public RecipeHolder<PandaRecipe> getPandaRecipe() {
-		if (this.level() instanceof ServerLevel serverLevel) {
-			if (cachedRecipe == null || !cachedRecipe.id().location().equals(getResourceVariant())) {
+		if (this.level() instanceof ServerLevel serverLevel && getResourceData().isPresent()) {
+			ResourceLocation dataId = getResourceData().get().id();
+			if (cachedRecipe == null || !cachedRecipe.id().location().equals(dataId)) {
 				Collection<RecipeHolder<PandaRecipe>> recipes = serverLevel.recipeAccess().recipeMap().byType(PandaRecipes.PANDA_RECIPE_TYPE.get());
 				for (RecipeHolder<PandaRecipe> recipe : recipes) {
-					if (recipe.id().equals(getResourceVariant())) {
-						checkValues(recipe.value());
+					if (recipe.id().location().equals(dataId)) {
 						return this.cachedRecipe = recipe;
 					}
 				}
-				checkValues(MISSING_RECIPE.value());
-				return MISSING_RECIPE;
+				return this.cachedRecipe = null;
 			}
 			return this.cachedRecipe;
 		}
 		return null;
 	}
 
-	public void refresh() {
+	/**
+	 * Get the recipe from the ID of the panda.
+	 *
+	 * @param id The ID of the panda
+	 * @return The recipe holder of the panda (null if client-side)
+	 */
+	private RecipeHolder<PandaRecipe> getRecipeFromID(ResourceLocation id) {
 		if (this.level() instanceof ServerLevel serverLevel) {
 			Collection<RecipeHolder<PandaRecipe>> recipes = serverLevel.recipeAccess().recipeMap().byType(PandaRecipes.PANDA_RECIPE_TYPE.get());
 			for (RecipeHolder<PandaRecipe> recipe : recipes) {
-				if (recipe.id().location().equals(getResourceVariant())) {
-					checkValues(recipe.value());
-					break;
+				if (recipe.id().location().equals(id)) {
+					return recipe;
 				}
 			}
 		}
-	}
-
-	public void checkValues(PandaRecipe recipe) {
-		if (!getResourceName().equals(recipe.getName()))
-			setResourceName(recipe.getName());
-		if (!getHexColor().equals(recipe.getHexColor()))
-			setHexcolor(recipe.getHexColor());
-		if (getAlpha() != recipe.getAlpha())
-			setAlpha(recipe.getAlpha());
+		return null;
 	}
 
 	@Override
@@ -259,14 +246,15 @@ public class ResourcePandaEntity extends Panda {
 		if (this.level() instanceof ServerLevel serverLevel && this.random.nextFloat() <= getPandaRecipe().value().getChance() &&
 				serverLevel.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
 			PandaRecipe recipe = getPandaRecipe().value();
-			this.spawnAtLocation(serverLevel, recipe.getResultItem(this.level().registryAccess()));
+			this.spawnAtLocation(serverLevel, recipe.getResult());
 		}
 	}
 
 	public void jump(Panda panda) {
 		float f = 0.42F * getJumpFactor(panda);
-		if (panda.hasEffect(MobEffects.JUMP)) {
-			f += 0.1F * (float) (panda.getEffect(MobEffects.JUMP).getAmplifier() + 1);
+		MobEffectInstance jumpEffect = panda.getEffect(MobEffects.JUMP);
+		if (jumpEffect != null) {
+			f += 0.1F * (float) (jumpEffect.getAmplifier() + 1);
 		}
 
 		Vec3 vector3d = panda.getDeltaMovement();

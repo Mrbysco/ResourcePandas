@@ -16,7 +16,7 @@ import java.util.function.Function;
 public class ClientHelper {
 	private static final HashMap<ResourceLocation, ResourcePandaEntity> pandaCache = new HashMap<>();
 
-	public static ResourcePandaEntity getResourcePanda(ResourceLocation id, String hexColor, float alpha) {
+	public static ResourcePandaEntity getResourcePanda(ResourceLocation id) {
 		return pandaCache.computeIfAbsent(id, key -> {
 			CompoundTag nbt = new CompoundTag();
 			nbt.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(PandaRegistry.RESOURCE_PANDA.get()).toString());
@@ -25,9 +25,7 @@ public class ClientHelper {
 			if (level != null) {
 				ResourcePandaEntity resourcePanda = (ResourcePandaEntity) EntityType.loadEntityRecursive(nbt, level, EntitySpawnReason.COMMAND, Function.identity());
 				if (resourcePanda != null) {
-					resourcePanda.setResourceVariant(id.toString());
-					resourcePanda.setHexcolor(hexColor);
-					resourcePanda.setAlpha(alpha);
+					resourcePanda.setResourceDataById(id);
 					resourcePanda.setTransformed(true);
 					return resourcePanda;
 				}

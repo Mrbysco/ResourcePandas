@@ -31,7 +31,7 @@ public class ResourceLayer<S extends PandaRenderState, M extends EntityModel<? s
 
 	@Override
 	public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, S renderState, float yRot, float xRot) {
-		if (renderState instanceof ResourcePandaRenderState resourceState) {
+		if (renderState instanceof ResourcePandaRenderState resourceState && resourceState.isConverted) {
 			VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(this.overlayLocation));
 			this.model.setupAnim(renderState);
 
@@ -43,7 +43,7 @@ public class ResourceLayer<S extends PandaRenderState, M extends EntityModel<? s
 				int i1 = DyeColor.values().length;
 				int j1 = l % i1;
 				int k1 = (l + 1) % i1;
-				float f = ((float)(k % 25) + Mth.frac(renderState.ageInTicks)) / 25.0F;
+				float f = ((float) (k % 25) + Mth.frac(renderState.ageInTicks)) / 25.0F;
 				int l1 = Sheep.getColor(DyeColor.byId(j1));
 				int i2 = Sheep.getColor(DyeColor.byId(k1));
 				color = ARGB.lerp(f, l1, i2);

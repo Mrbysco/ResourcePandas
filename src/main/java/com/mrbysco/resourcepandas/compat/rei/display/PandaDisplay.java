@@ -54,7 +54,7 @@ public class PandaDisplay implements Display {
 	public PandaDisplay(RecipeHolder<PandaRecipe> recipeHolder) {
 		PandaRecipe recipe = recipeHolder.value();
 		this.input = EntryIngredients.ofIngredient(recipe.getIngredient());
-		this.output = EntryIngredients.of(recipe.getResultItem(null).copy());
+		this.output = EntryIngredients.of(recipe.getResult());
 		this.hexColor = recipe.getHexColor();
 		this.alpha = recipe.getAlpha();
 		this.chance = recipe.getChance();

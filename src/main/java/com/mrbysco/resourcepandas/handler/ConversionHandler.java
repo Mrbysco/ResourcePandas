@@ -9,7 +9,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.ConversionParams;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Panda;
 import net.minecraft.world.entity.player.Player;
@@ -36,10 +35,10 @@ public class ConversionHandler {
 					ResourcePandaEntity resourcePanda = panda.convertTo(PandaRegistry.RESOURCE_PANDA.get(),
 							ConversionParams.single(panda, true, true), cow -> {
 								net.neoforged.neoforge.event.EventHooks.onLivingConvert(panda, cow);
+
 							});
 					if (resourcePanda != null) {
-						resourcePanda.setResourceVariant(recipe.id().toString());
-						resourcePanda.checkValues(recipe.value());
+						resourcePanda.setResourceDataById(recipe.id().location());
 						resourcePanda.startTransforming(300);
 						level.playSound((Player) null, event.getPos(), SoundEvents.PANDA_EAT, SoundSource.NEUTRAL, 0.5F + 0.5F * (float) resourcePanda.getRandom().nextInt(2), (resourcePanda.getRandom().nextFloat() - resourcePanda.getRandom().nextFloat()) * 0.2F + 1.0F);
 

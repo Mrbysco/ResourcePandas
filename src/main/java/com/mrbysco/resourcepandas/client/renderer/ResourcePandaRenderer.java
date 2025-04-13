@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.entity.PandaRenderer;
 import net.minecraft.client.renderer.entity.state.PandaRenderState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.Panda;
-import org.jetbrains.annotations.NotNull;
 
 public class ResourcePandaRenderer extends PandaRenderer {
 	private static final ResourceLocation OVERLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/entity/panda/resource_overlay.png");
@@ -42,6 +41,6 @@ public class ResourcePandaRenderer extends PandaRenderer {
 		if (renderState instanceof ResourcePandaRenderState resourceState)
 			return renderState.isFullyFrozen || resourceState.isConverting;
 		else
-			return renderState.isFullyFrozen;
+			return false;
 	}
 }
