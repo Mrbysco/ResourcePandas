@@ -74,7 +74,17 @@ repositories {
         url = "https://maven.blamejared.com"
     }
     maven {
-        url "https://maven.shedaniel.me/"
+        url = "https://maven.shedaniel.me/"
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                url "https://cursemaven.com"
+            }
+        }
+        filter {
+            includeGroup "curse.maven"
+        }
     }
 }
 
@@ -97,6 +107,9 @@ dependencies {
     localRuntime "me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}"
     compileOnly "dev.architectury:architectury-neoforge:${architectury_version}"
     localRuntime "dev.architectury:architectury-neoforge:${architectury_version}"
+
+    compileOnly "curse.maven:jade-324717:6170888"
+    localRuntime "curse.maven:jade-324717:6170888"
 }
 
 jar {
