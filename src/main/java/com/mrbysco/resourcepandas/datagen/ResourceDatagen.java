@@ -8,7 +8,6 @@ import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.model.ItemModelUtils;
-import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
@@ -50,16 +49,16 @@ public class ResourceDatagen {
 
 		@Override
 		protected void registerModels(@NotNull BlockModelGenerators blockModels, @NotNull ItemModelGenerators itemModels) {
-			ResourceLocation resourcelocation = ModelLocationUtils.decorateItemModelLocation("template_spawn_egg");
-			itemModels.itemModelOutput
-					.accept(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get(),
-							ItemModelUtils.tintedModel(resourcelocation, new ResourceColor(), ItemModelUtils.constantTint(1776418)));
+			ResourceLocation baseTexture = Reference.modLoc("item/panda_spawn_egg");
+			ResourceLocation customOverlay = Reference.modLoc("item/panda_spawn_egg_overlay");
 
-//			ResourceLocation resourcelocation = itemModels.generateLayeredItem(
-//					PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get(), ModelLocationUtils.decorateItemModelLocation(Reference.RESOURCE_COLOR.toString()),
-//					ModelLocationUtils.getModelLocation(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get())
-//			);
-//			itemModels.itemModelOutput.accept(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get(), ItemModelUtils.tintedModel(resourcelocation, new ResourceColor()));
+			ResourceLocation layeredModel = itemModels.generateLayeredItem(
+					PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get(), customOverlay, baseTexture
+			);
+			itemModels.itemModelOutput.accept(
+					PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get(),
+					ItemModelUtils.tintedModel(layeredModel, new ResourceColor(), ItemModelUtils.constantTint(1776418))
+			);
 		}
 
 	}

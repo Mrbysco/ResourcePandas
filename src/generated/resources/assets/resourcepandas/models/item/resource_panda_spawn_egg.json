@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "resourcepandas:item/panda_spawn_egg_overlay",
+    "layer1": "resourcepandas:item/panda_spawn_egg"
+  }
+}

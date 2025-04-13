@@ -180,7 +180,7 @@ public class ResourcePandaEntity extends Panda {
 	public void addAdditionalSaveData(CompoundTag compound) {
 		super.addAdditionalSaveData(compound);
 		if (this.getResourceData().isPresent()) {
-			this.getResourceData().get().saveToTag(compound);
+			compound.store("resource_data", ResourceData.CODEC, this.getResourceData().get());
 		}
 		compound.putBoolean("Transformed", this.isTransformed());
 	}
@@ -189,11 +189,12 @@ public class ResourcePandaEntity extends Panda {
 	public void readAdditionalSaveData(CompoundTag compound) {
 		super.readAdditionalSaveData(compound);
 		if (compound.contains("resource_data")) {
-			this.setResourceData(ResourceData.fromTag(compound));
+			compound.read("resource_data", ResourceData.CODEC)
+					.ifPresent(this::setResourceData);
 		} else {
 			this.setResourceData(null);
 		}
-		this.setTransformed(compound.getBoolean("Transformed"));
+		this.setTransformed(compound.getBooleanOr("Transformed", false));
 	}
 
 	public RecipeHolder<PandaRecipe> getPandaRecipe() {
@@ -252,7 +253,7 @@ public class ResourcePandaEntity extends Panda {
 
 	public void jump(Panda panda) {
 		float f = 0.42F * getJumpFactor(panda);
-		MobEffectInstance jumpEffect = panda.getEffect(MobEffects.JUMP);
+		MobEffectInstance jumpEffect = panda.getEffect(MobEffects.JUMP_BOOST);
 		if (jumpEffect != null) {
 			f += 0.1F * (float) (jumpEffect.getAmplifier() + 1);
 		}

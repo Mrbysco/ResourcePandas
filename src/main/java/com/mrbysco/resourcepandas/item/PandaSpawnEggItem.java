@@ -15,6 +15,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -24,8 +25,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class PandaSpawnEggItem extends SpawnEggItem {
 	public PandaSpawnEggItem(final Properties properties) {
@@ -89,21 +90,16 @@ public class PandaSpawnEggItem extends SpawnEggItem {
 		}
 	}
 
-
 	@Override
-	public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext pContext, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
-		super.appendHoverText(stack, pContext, tooltip, flagIn);
+	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> consumer, TooltipFlag flag) {
+		super.appendHoverText(stack, context, display, consumer, flag);
 		ResourceLocation resourceType = stack.get(PandaDataComponents.RESOURCE_TYPE);
 		if (resourceType != null) {
 			if (Screen.hasShiftDown()) {
-				tooltip.add(Component.literal("Resource: ").withStyle(ChatFormatting.YELLOW).append(Component.literal(resourceType.toString()).withStyle(ChatFormatting.GOLD)));
+				consumer.accept(Component.literal("Resource: ").withStyle(ChatFormatting.YELLOW).append(Component.literal(resourceType.toString()).withStyle(ChatFormatting.GOLD)));
 			} else {
-				tooltip.add(Component.literal("Resource: ").withStyle(ChatFormatting.YELLOW).append(Component.literal(resourceType.getPath()).withStyle(ChatFormatting.GOLD)));
+				consumer.accept(Component.literal("Resource: ").withStyle(ChatFormatting.YELLOW).append(Component.literal(resourceType.getPath()).withStyle(ChatFormatting.GOLD)));
 			}
 		}
-	}
-
-	public int getColor(ItemStack stack, int tintIndex) {
-		return tintIndex == 0 ? stack.getOrDefault(PandaDataComponents.COLOR, 15198183) : 0;
 	}
 }

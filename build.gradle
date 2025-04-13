@@ -108,8 +108,8 @@ dependencies {
     compileOnly "dev.architectury:architectury-neoforge:${architectury_version}"
     localRuntime "dev.architectury:architectury-neoforge:${architectury_version}"
 
-    compileOnly "curse.maven:jade-324717:6170888"
-    localRuntime "curse.maven:jade-324717:6170888"
+    compileOnly "curse.maven:jade-324717:6389812"
+    localRuntime "curse.maven:jade-324717:6389812"
 }
 
 jar {

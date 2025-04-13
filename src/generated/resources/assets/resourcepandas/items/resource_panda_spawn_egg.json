@@ -1,7 +1,7 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft:item/template_spawn_egg",
+    "model": "resourcepandas:item/resource_panda_spawn_egg",
     "tints": [
       {
         "type": "resourcepandas:resource_color",
