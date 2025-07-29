@@ -45,9 +45,9 @@ public class PandaCategory implements DisplayCategory<PandaDisplay> {
 			ResourcePandaEntity panda = ClientHelper.getResourcePanda(display.getRecipeId());
 			if (panda != null) {
 				// Draw entity
-				RenderHelper.renderEntity(guiGraphics, 46, 52, 20.0F, 38 - mouseX, 80 - mouseY, panda);
+				RenderHelper.renderEntity(guiGraphics, bounds.x + 46, bounds.y + 52, 20.0F, 38 - mouseX, 80 - mouseY, panda);
 			}
-		}), bounds.x, bounds.y - 2, 0));
+		}), bounds.x, bounds.y - 2));
 
 		widgets.add(Widgets.createSlot(new Point(bounds.getMinX() + 5, centerPoint.y - 8)).entries(display.getInputEntries().getFirst()).markInput());
 		widgets.add(Widgets.createSlot(new Point(bounds.getMaxX() - 21, centerPoint.y - 8)).entries(display.getOutputEntries().getFirst()).markOutput());

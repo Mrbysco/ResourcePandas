@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 public class ResourceDatagen {
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent.Client event) {

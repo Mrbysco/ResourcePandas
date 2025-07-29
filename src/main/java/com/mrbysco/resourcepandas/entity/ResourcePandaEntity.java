@@ -9,7 +9,6 @@ import com.mrbysco.resourcepandas.util.ResourceData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -36,6 +35,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.Nullable;
@@ -177,24 +178,25 @@ public class ResourcePandaEntity extends Panda {
 	}
 
 	@Override
-	public void addAdditionalSaveData(CompoundTag compound) {
-		super.addAdditionalSaveData(compound);
+	protected void addAdditionalSaveData(ValueOutput output) {
+		super.addAdditionalSaveData(output);
 		if (this.getResourceData().isPresent()) {
-			compound.store("resource_data", ResourceData.CODEC, this.getResourceData().get());
+			output.store("resource_data", ResourceData.CODEC, this.getResourceData().get());
 		}
-		compound.putBoolean("Transformed", this.isTransformed());
+		output.putBoolean("Transformed", this.isTransformed());
 	}
 
 	@Override
-	public void readAdditionalSaveData(CompoundTag compound) {
-		super.readAdditionalSaveData(compound);
-		if (compound.contains("resource_data")) {
-			compound.read("resource_data", ResourceData.CODEC)
-					.ifPresent(this::setResourceData);
+	public void readAdditionalSaveData(ValueInput input) {
+		super.readAdditionalSaveData(input);
+
+		Optional<ResourceData> resourceData = input.read("resource_data", ResourceData.CODEC);
+		if (resourceData.isPresent()) {
+			this.setResourceData(resourceData.get());
 		} else {
 			this.setResourceData(null);
 		}
-		this.setTransformed(compound.getBooleanOr("Transformed", false));
+		this.setTransformed(input.getBooleanOr("Transformed", false));
 	}
 
 	public RecipeHolder<PandaRecipe> getPandaRecipe() {

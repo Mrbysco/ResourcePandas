@@ -4,6 +4,7 @@ import com.mrbysco.resourcepandas.client.ClientHandler;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import com.mrbysco.resourcepandas.handler.ConversionHandler;
 import com.mrbysco.resourcepandas.item.PandaDataComponents;
+import com.mrbysco.resourcepandas.recipe.PandaCache;
 import com.mrbysco.resourcepandas.recipe.PandaRecipe;
 import com.mrbysco.resourcepandas.recipe.PandaRecipes;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
@@ -13,8 +14,10 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +28,6 @@ public class ResourcePandas {
 	public static final Logger LOGGER = LogManager.getLogger();
 
 	public ResourcePandas(IEventBus eventBus, Dist dist) {
-		NeoForge.EVENT_BUS.register(new ConversionHandler());
 
 		PandaDataComponents.DATA_COMPONENT_TYPES.register(eventBus);
 		PandaRegistry.ITEMS.register(eventBus);
@@ -38,10 +40,23 @@ public class ResourcePandas {
 		eventBus.addListener(this::registerEntityAttributes);
 		eventBus.addListener(this::addTabContents);
 
+		NeoForge.EVENT_BUS.register(new ConversionHandler());
+		NeoForge.EVENT_BUS.addListener(this::onDatapackSync);
+		NeoForge.EVENT_BUS.addListener(this::onRecipeReceived);
+
 		if (dist.isClient()) {
 			eventBus.addListener(ClientHandler::registerEntityRenders);
 			eventBus.addListener(ClientHandler::registerItemColors);
 		}
+	}
+
+	public void onDatapackSync(OnDatapackSyncEvent event) {
+		event.sendRecipes(PandaRecipes.PANDA_RECIPE_TYPE.get());
+	}
+
+	public void onRecipeReceived(RecipesReceivedEvent event) {
+		PandaCache.PANDA_RECIPES.clear();
+		PandaCache.PANDA_RECIPES.addAll(event.getRecipeMap().byType(PandaRecipes.PANDA_RECIPE_TYPE.get()));
 	}
 
 	public void registerEntityAttributes(EntityAttributeCreationEvent event) {
