@@ -1,6 +1,5 @@
 package com.mrbysco.resourcepandas.util;
 
-import com.mrbysco.resourcepandas.ResourcePandas;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,11 +31,8 @@ public class RenderHelper {
 
 		poseStack.translate(0.0F, (float)livingEntity.getVehicleAttachmentPoint(livingEntity).y());
 
-		Vector3f testVec = new Vector3f();
-		poseStack.transform(testVec);
-
 		InventoryScreen.renderEntityInInventory(guiGraphics, startX, startY, endX, endY,
-				(float) scale, testVec, ANGLE, (Quaternionf) null, livingEntity);
+				(float) scale, TRANSLATION, ANGLE, (Quaternionf) null, livingEntity);
 
 		poseStack.popMatrix();
 	}
