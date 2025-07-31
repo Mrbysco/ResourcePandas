@@ -1,1 +1,1 @@
-* Initial update to 1.21.8
+* Fix JEI compat (Thanks to Mezz)
