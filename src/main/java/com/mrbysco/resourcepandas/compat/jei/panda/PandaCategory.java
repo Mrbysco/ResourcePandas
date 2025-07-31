@@ -27,18 +27,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
+import org.joml.Vector2f;
 
 public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>> {
 	protected static final int X_FIRST_ITEM = 0;
-	protected static final int X_OUTPUT_ITEM = 105;
-	protected static final int Y_ITEM_DISTANCE = 23;
-	private final IDrawableStatic background;
+	protected static final int X_OUTPUT_ITEM = 96;
+	protected static final int Y_ITEM_DISTANCE = 13;
 	private final IDrawableStatic icon;
 
 	public PandaCategory(IGuiHelper guiHelper) {
-		ResourceLocation location = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/pandas.png");
-		this.background = guiHelper.drawableBuilder(location, 0, 0, 72, 62).addPadding(1, 0, 0, 50).build();
-
 		ResourceLocation iconLocation = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/panda_icon.png");
 		this.icon = guiHelper.createDrawable(iconLocation, 0, 0, 16, 16);
 	}
@@ -55,12 +52,12 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 
 	@Override
 	public int getWidth() {
-		return 72;
+		return 112;
 	}
 
 	@Override
 	public int getHeight() {
-		return 62;
+		return 40;
 	}
 
 	@Override
@@ -73,25 +70,31 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 		PandaRecipe recipe = recipeHolder.value();
 
 		builder.addSlot(RecipeIngredientRole.INPUT, X_FIRST_ITEM, Y_ITEM_DISTANCE)
-				.add(recipe.getIngredient());
+				.add(recipe.getIngredient())
+				.setStandardSlotBackground();
 		builder.addSlot(RecipeIngredientRole.OUTPUT, X_OUTPUT_ITEM, Y_ITEM_DISTANCE)
 				.add(recipe.getResult())
-				.addRichTooltipCallback(new OutputTooltip(recipe));
+				.addRichTooltipCallback(new OutputTooltip(recipe))
+				.setStandardSlotBackground();
 	}
 
 	@Override
 	public void draw(RecipeHolder<PandaRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		this.background.draw(guiGraphics);
 		PandaRecipe recipe = recipeHolder.value();
+
+		final Matrix3x2fStack poseStack = guiGraphics.pose();
 
 		// Draw entity
 		ResourcePandaEntity resourcePanda = ClientHelper.getResourcePanda(recipeHolder.id().location());
 		if (resourcePanda != null) {
-			RenderHelper.renderEntity(guiGraphics, 60, 52, 20.0F, 38 - mouseX, 80 - mouseY, resourcePanda);
+			Vector2f position = new Vector2f(56, 36);
+			position = poseStack.transformPosition(position);
+			int x = Math.round(position.x);
+			int y = Math.round(position.y);
+			RenderHelper.renderEntity(guiGraphics, x, y, 20.0F, 38 - mouseX, 80 - mouseY, resourcePanda);
 		}
 
 		// Draw entity name
-		final Matrix3x2fStack poseStack = guiGraphics.pose();
 		poseStack.pushMatrix();
 		poseStack.translate(1, 0);
 		Font font = Minecraft.getInstance().font;
@@ -112,7 +115,7 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 
 		@Override
 		public void onRichTooltip(@NotNull IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
-			tooltip.add(Component.translatable("resourcepandas.gui.jei.pandas.tooltip", (int) (100 * recipe.getChance())).withStyle(ChatFormatting.YELLOW));
+			tooltip.add(Component.translatable("resourcepandas.gui.jei.pandas.tooltip", Math.round(100 * recipe.getChance())).withStyle(ChatFormatting.YELLOW));
 		}
 	}
 }
