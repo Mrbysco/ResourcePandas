@@ -1,1 +1,1 @@
-* Fix JEI compat (Thanks to Mezz)
+* Update to 1.21.10
