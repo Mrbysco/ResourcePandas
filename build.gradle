@@ -3,8 +3,8 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.192'
-    id 'net.darkhax.curseforgegradle' version '1.1.26'
+    id 'net.neoforged.gradle.userdev' version '7.1.4'
+    id 'net.darkhax.curseforgegradle' version '1.1.28'
     id 'com.modrinth.minotaur' version "2.+"
 }
 
@@ -99,17 +99,17 @@ dependencies {
 //    compileOnly "com.blamejared.crafttweaker:CraftTweaker-neoforge-${mc_version}:${crafttweaker_version}"
 //    localRuntime "com.blamejared.crafttweaker:CraftTweaker-neoforge-${mc_version}:${crafttweaker_version}"
 
-    compileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:${rei_version}"
-    compileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-neoforge:${rei_version}"
-    localRuntime "me.shedaniel:RoughlyEnoughItems-neoforge:${rei_version}"
+//    compileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:${rei_version}"
+//    compileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-neoforge:${rei_version}"
+//    localRuntime "me.shedaniel:RoughlyEnoughItems-neoforge:${rei_version}"
+//
+//    compileOnly "me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}"
+//    localRuntime "me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}"
+//    compileOnly "dev.architectury:architectury-neoforge:${architectury_version}"
+//    localRuntime "dev.architectury:architectury-neoforge:${architectury_version}"
 
-    compileOnly "me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}"
-    localRuntime "me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}"
-    compileOnly "dev.architectury:architectury-neoforge:${architectury_version}"
-    localRuntime "dev.architectury:architectury-neoforge:${architectury_version}"
-
-    compileOnly "curse.maven:jade-324717:6713216"
-    localRuntime "curse.maven:jade-324717:6713216"
+    compileOnly "curse.maven:jade-324717:${jade_id}"
+    localRuntime "curse.maven:jade-324717:${jade_id}"
 }
 
 jar {

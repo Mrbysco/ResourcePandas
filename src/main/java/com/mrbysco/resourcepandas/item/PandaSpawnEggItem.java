@@ -3,7 +3,6 @@ package com.mrbysco.resourcepandas.item;
 import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -30,7 +29,7 @@ import java.util.function.Consumer;
 
 public class PandaSpawnEggItem extends SpawnEggItem {
 	public PandaSpawnEggItem(final Properties properties) {
-		super(PandaRegistry.RESOURCE_PANDA.get(), properties);
+		super(properties.spawnEgg(PandaRegistry.RESOURCE_PANDA.get()));
 	}
 
 	@Override
@@ -92,14 +91,10 @@ public class PandaSpawnEggItem extends SpawnEggItem {
 
 	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> consumer, TooltipFlag flag) {
-		super.appendHoverText(stack, context, display, consumer, flag);
 		ResourceLocation resourceType = stack.get(PandaDataComponents.RESOURCE_TYPE);
 		if (resourceType != null) {
-			if (Screen.hasShiftDown()) {
-				consumer.accept(Component.literal("Resource: ").withStyle(ChatFormatting.YELLOW).append(Component.literal(resourceType.toString()).withStyle(ChatFormatting.GOLD)));
-			} else {
-				consumer.accept(Component.literal("Resource: ").withStyle(ChatFormatting.YELLOW).append(Component.literal(resourceType.getPath()).withStyle(ChatFormatting.GOLD)));
-			}
+			String resource = flag.hasShiftDown() ? resourceType.toString() : resourceType.getPath();
+			consumer.accept(Component.literal("Resource: ").withStyle(ChatFormatting.YELLOW).append(Component.literal(resource).withStyle(ChatFormatting.GOLD)));
 		}
 	}
 }

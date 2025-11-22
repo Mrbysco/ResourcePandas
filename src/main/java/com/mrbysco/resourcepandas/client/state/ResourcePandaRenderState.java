@@ -17,7 +17,7 @@ public class ResourcePandaRenderState extends PandaRenderState {
 	}
 
 	public boolean isJebSheep() {
-		return this.customName != null && "jeb_".equals(this.customName.getString());
+		return this.nameTag != null && "jeb_".equals(this.nameTag.getString());
 	}
 
 	public int getNormalColor() {

@@ -17,11 +17,11 @@ public record ResourceData(ResourceLocation id, String name, String hexColor,
 
 	public static final Codec<ResourceData> CODEC = RecordCodecBuilder.create(inst ->
 			inst.group(
-					ResourceLocation.CODEC.fieldOf("id").forGetter(ResourceData::id),
-					Codec.STRING.fieldOf("name").forGetter(ResourceData::name),
-					Codec.STRING.fieldOf("hexColor").forGetter(ResourceData::hexColor),
-					Codec.FLOAT.fieldOf("alpha").forGetter(ResourceData::alpha),
-					Codec.FLOAT.fieldOf("chance").forGetter(ResourceData::chance))
+							ResourceLocation.CODEC.fieldOf("id").forGetter(ResourceData::id),
+							Codec.STRING.fieldOf("name").forGetter(ResourceData::name),
+							Codec.STRING.fieldOf("hexColor").forGetter(ResourceData::hexColor),
+							Codec.FLOAT.fieldOf("alpha").forGetter(ResourceData::alpha),
+							Codec.FLOAT.fieldOf("chance").forGetter(ResourceData::chance))
 					.apply(inst, ResourceData::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ResourceData> STREAM_CODEC = StreamCodec.composite(

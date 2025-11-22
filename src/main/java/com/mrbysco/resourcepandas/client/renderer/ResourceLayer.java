@@ -1,15 +1,13 @@
 package com.mrbysco.resourcepandas.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mrbysco.resourcepandas.client.state.ResourcePandaRenderState;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.PandaModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.PandaRenderState;
@@ -27,14 +25,28 @@ public class ResourceLayer<S extends PandaRenderState, M extends EntityModel<? s
 	}
 
 	@Override
-	public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, S renderState, float yRot, float xRot) {
+	public void submit(PoseStack poseStack, SubmitNodeCollector nodeCollector, int packedLight, PandaRenderState renderState, float xRoy, float yRot) {
 		if (renderState instanceof ResourcePandaRenderState resourceState && resourceState.isConverted) {
-			VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(this.overlayLocation));
+			int color = ARGB.color(resourceState.alpha, resourceState.getNormalColor());
 			this.model.setupAnim(renderState);
-
-			int color = resourceState.getColor();
-			int alpha = resourceState.alpha;
-			this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, LivingEntityRenderer.getOverlayCoords(renderState, 0.0F), ARGB.color(alpha, color));
+			if (renderState.isInvisible) {
+				if (renderState.appearsGlowing()) {
+					nodeCollector.submitModel(
+							this.model,
+							renderState,
+							poseStack,
+							RenderType.outline(this.overlayLocation),
+							packedLight,
+							renderState.lightCoords,
+							-1,
+							null,
+							renderState.outlineColor,
+							null
+					);
+				}
+			} else {
+				coloredCutoutModelCopyLayerRender(this.model, this.overlayLocation, poseStack, nodeCollector, packedLight, renderState, color, 1);
+			}
 		}
 	}
 }

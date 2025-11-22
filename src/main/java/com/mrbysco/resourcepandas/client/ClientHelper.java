@@ -23,7 +23,7 @@ public class ClientHelper {
 			Minecraft mc = Minecraft.getInstance();
 			Level level = mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null ? mc.getSingleplayerServer().getAllLevels().iterator().next() : mc.level;
 			if (level != null) {
-				ResourcePandaEntity resourcePanda = (ResourcePandaEntity) EntityType.loadEntityRecursive(nbt, level, EntitySpawnReason.COMMAND, Function.identity());
+				ResourcePandaEntity resourcePanda = (ResourcePandaEntity) EntityType.loadEntityRecursive(nbt, level, EntitySpawnReason.LOAD, Function.identity());
 				if (resourcePanda != null) {
 					resourcePanda.setResourceDataById(id);
 					resourcePanda.setTransformed(true);

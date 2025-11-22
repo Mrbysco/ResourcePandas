@@ -29,7 +29,7 @@ public class RenderHelper {
 		livingEntity.yHeadRotO = livingEntity.getYRot() + 180F;
 		livingEntity.setXRot((float) -(pitch / 5.F));
 
-		poseStack.translate(0.0F, (float)livingEntity.getVehicleAttachmentPoint(livingEntity).y());
+		poseStack.translate(0.0F, (float) livingEntity.getVehicleAttachmentPoint(livingEntity).y());
 
 		InventoryScreen.renderEntityInInventory(guiGraphics, startX, startY, endX, endY,
 				(float) scale, TRANSLATION, ANGLE, (Quaternionf) null, livingEntity);

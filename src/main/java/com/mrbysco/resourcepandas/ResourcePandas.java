@@ -32,7 +32,7 @@ public class ResourcePandas {
 		PandaDataComponents.DATA_COMPONENT_TYPES.register(eventBus);
 		PandaRegistry.ITEMS.register(eventBus);
 		PandaRegistry.ENTITY_DATA_SERIALIZER.register(eventBus);
-		PandaRegistry.ENTITY_TYPES.register(eventBus);
+		PandaRegistry.ENTITIES.register(eventBus);
 		PandaRegistry.CREATIVE_MODE_TABS.register(eventBus);
 		PandaRecipes.RECIPE_TYPES.register(eventBus);
 		PandaRecipes.RECIPE_SERIALIZERS.register(eventBus);

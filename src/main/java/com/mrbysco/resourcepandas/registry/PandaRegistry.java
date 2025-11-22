@@ -8,7 +8,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.syncher.EntityDataSerializer;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.CreativeModeTab;
@@ -25,20 +24,18 @@ import java.util.function.Supplier;
 public class PandaRegistry {
 	public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Reference.MOD_ID);
 	public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Reference.MOD_ID);
-	public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Reference.MOD_ID);
+	public static final DeferredRegister.Entities ENTITIES = DeferredRegister.createEntities(Reference.MOD_ID);
 	public static final DeferredRegister<EntityDataSerializer<?>> ENTITY_DATA_SERIALIZER = DeferredRegister.create(NeoForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS, Reference.MOD_ID);
 
-	public static final Supplier<EntityType<ResourcePandaEntity>> RESOURCE_PANDA = ENTITY_TYPES.register("resource_panda", () ->
-			EntityType.Builder.<ResourcePandaEntity>of(ResourcePandaEntity::new, MobCategory.CREATURE)
-					.sized(1.3F, 1.25F).clientTrackingRange(10).build(entityId("resource_panda")));
+	public static final Supplier<EntityType<ResourcePandaEntity>> RESOURCE_PANDA = ENTITIES.registerEntityType("resource_panda",
+			ResourcePandaEntity::new,
+			MobCategory.CREATURE,
+			builder -> builder
+					.sized(1.3F, 1.25F).clientTrackingRange(10));
 
 	public static final Supplier<EntityDataSerializer<Optional<ResourceData>>> RESOURCE_DATA = ENTITY_DATA_SERIALIZER.register("resource_data", () -> EntityDataSerializer.forValueType(
 			ResourceData.STREAM_CODEC.apply(ByteBufCodecs::optional)
 	));
-
-	private static ResourceKey<EntityType<?>> entityId(String path) {
-		return ResourceKey.create(Registries.ENTITY_TYPE, Reference.modLoc(path));
-	}
 
 	public static final DeferredItem<PandaSpawnEggItem> RESOURCE_PANDA_SPAWN_EGG = ITEMS.registerItem("resource_panda_spawn_egg", PandaSpawnEggItem::new);
 

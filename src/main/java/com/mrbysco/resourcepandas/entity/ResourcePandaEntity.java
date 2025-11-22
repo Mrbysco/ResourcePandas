@@ -166,7 +166,7 @@ public class ResourcePandaEntity extends Panda {
 
 	@Override
 	public void tick() {
-		if (!this.level().isClientSide && this.isAlive() && !this.isNoAi()) {
+		if (!this.level().isClientSide() && this.isAlive() && !this.isNoAi()) {
 			if (!this.isTransformed()) {
 				--this.resourceTransformationTime;
 				if (this.resourceTransformationTime < 0) {
