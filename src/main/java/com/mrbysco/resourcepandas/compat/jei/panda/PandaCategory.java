@@ -21,7 +21,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -79,7 +79,7 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 	}
 
 	@Override
-	public void draw(RecipeHolder<PandaRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	public void draw(RecipeHolder<PandaRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 		PandaRecipe recipe = recipeHolder.value();
 
 		final Matrix3x2fStack poseStack = guiGraphics.pose();
@@ -105,7 +105,7 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 		if (font.width(text) > 122) {
 			poseStack.scale(0.75F, 0.75F);
 		}
-		guiGraphics.drawString(font, text, 0, 0, 8, false);
+		guiGraphics.text(font, text, 0, 0, 8, false);
 		poseStack.popMatrix();
 	}
 

@@ -29,6 +29,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.panda.Panda;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -47,7 +48,7 @@ import java.util.Optional;
 public class ResourcePandaEntity extends Panda {
 	private static final RecipeHolder<PandaRecipe> MISSING_RECIPE = new RecipeHolder<>(
 			ResourceKey.create(Registries.RECIPE, Reference.modLoc("missing")),
-			new PandaRecipe("Missing", Ingredient.of(Items.EGG), new ItemStack(Items.EGG), "#ffd79a", 1.0F, 2.0F));
+			new PandaRecipe("Missing", Ingredient.of(Items.EGG), new ItemStackTemplate(Items.EGG), "#ffd79a", 1.0F, 2.0F));
 
 	private static final EntityDataAccessor<Optional<ResourceData>> RESOURCE_DATA = SynchedEntityData.defineId(ResourcePandaEntity.class, PandaRegistry.RESOURCE_DATA.get());
 	private static final EntityDataAccessor<Boolean> TRANSFORMED = SynchedEntityData.defineId(ResourcePandaEntity.class, EntityDataSerializers.BOOLEAN);

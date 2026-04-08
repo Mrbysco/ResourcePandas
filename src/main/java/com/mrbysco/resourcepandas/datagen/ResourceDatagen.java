@@ -8,6 +8,7 @@ import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
@@ -49,8 +50,8 @@ public class ResourceDatagen {
 
 		@Override
 		protected void registerModels(@NotNull BlockModelGenerators blockModels, @NotNull ItemModelGenerators itemModels) {
-			Identifier baseTexture = Reference.modLoc("item/panda_spawn_egg");
-			Identifier customOverlay = Reference.modLoc("item/panda_spawn_egg_overlay");
+			Material baseTexture = new Material(Reference.modLoc("item/panda_spawn_egg"));
+			Material customOverlay = new Material(Reference.modLoc("item/panda_spawn_egg_overlay"));
 
 			Identifier layeredModel = itemModels.generateLayeredItem(
 					PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get(), customOverlay, baseTexture

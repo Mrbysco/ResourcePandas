@@ -5,7 +5,6 @@
   "ingredient": "#c:storage_blocks/copper",
   "name": "Copper",
   "result": {
-    "count": 1,
     "id": "minecraft:copper_ingot"
   }
 }

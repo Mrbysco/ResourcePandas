@@ -5,7 +5,6 @@
   "ingredient": "#c:storage_blocks/diamond",
   "name": "Diamond",
   "result": {
-    "count": 1,
     "id": "minecraft:diamond"
   }
 }

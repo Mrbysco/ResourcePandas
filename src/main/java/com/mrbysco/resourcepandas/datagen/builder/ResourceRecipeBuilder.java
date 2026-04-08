@@ -9,7 +9,7 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
@@ -17,8 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ResourceRecipeBuilder implements RecipeBuilder {
 	private final HolderGetter<Item> items;
-	private final Item result;
-	private final int count;
+	private final ItemStackTemplate result;
 	private final Ingredient ingredient;
 	private String name;
 	private String hexColor;
@@ -28,8 +27,7 @@ public class ResourceRecipeBuilder implements RecipeBuilder {
 	public ResourceRecipeBuilder(HolderGetter<Item> items, Ingredient input, ItemLike output, int count) {
 		this.items = items;
 		this.ingredient = input;
-		this.result = output.asItem();
-		this.count = count;
+		this.result = new ItemStackTemplate(output.asItem());
 	}
 
 	public static ResourceRecipeBuilder resource(HolderGetter<Item> items, Ingredient input, ItemLike output) {
@@ -69,12 +67,12 @@ public class ResourceRecipeBuilder implements RecipeBuilder {
 		return this;
 	}
 
-	public Item getResult() {
-		return this.result;
+	public ResourceKey<Recipe<?>> defaultId() {
+		return RecipeBuilder.getDefaultRecipeId(this.result);
 	}
 
 	public void save(RecipeOutput recipeOutput, ResourceKey<Recipe<?>> resourceKey) {
-		PandaRecipe recipe = new PandaRecipe(this.name, this.ingredient, new ItemStack(this.result, this.count), this.hexColor, this.alpha, this.chance);
+		PandaRecipe recipe = new PandaRecipe(this.name, this.ingredient, this.result, this.hexColor, this.alpha, this.chance);
 		recipeOutput.accept(resourceKey, recipe, null);
 	}
 

@@ -5,7 +5,6 @@
   "ingredient": "#c:storage_blocks/gold",
   "name": "Gold",
   "result": {
-    "count": 1,
     "id": "minecraft:gold_nugget"
   }
 }

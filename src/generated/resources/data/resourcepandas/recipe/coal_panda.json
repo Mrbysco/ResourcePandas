@@ -5,7 +5,6 @@
   "ingredient": "#c:storage_blocks/coal",
   "name": "Coal",
   "result": {
-    "count": 1,
     "id": "minecraft:coal"
   }
 }

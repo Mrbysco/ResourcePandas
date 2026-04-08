@@ -5,7 +5,6 @@
   "ingredient": "#c:storage_blocks/netherite",
   "name": "Netherite",
   "result": {
-    "count": 1,
     "id": "minecraft:netherite_scrap"
   }
 }

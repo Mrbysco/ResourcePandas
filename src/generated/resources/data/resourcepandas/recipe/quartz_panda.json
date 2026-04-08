@@ -5,7 +5,6 @@
   "ingredient": "minecraft:quartz_block",
   "name": "Quartz",
   "result": {
-    "count": 1,
     "id": "minecraft:quartz"
   }
 }

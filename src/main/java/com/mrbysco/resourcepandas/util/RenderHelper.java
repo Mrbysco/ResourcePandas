@@ -1,13 +1,13 @@
 package com.mrbysco.resourcepandas.util;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.joml.Matrix3x2fStack;
 
 public class RenderHelper {
-	public static void renderEntity(GuiGraphics guiGraphics, int x, int y, double scale, double mouseX, double mouseY, LivingEntity livingEntity) {
+	public static void renderEntity(GuiGraphicsExtractor guiGraphics, int x, int y, double scale, double mouseX, double mouseY, LivingEntity livingEntity) {
 		if (livingEntity.level() == null) return;
 
 		int startX = x - 50;
@@ -24,7 +24,7 @@ public class RenderHelper {
 		int adjustedMouseX = Mth.ceil(mouseX * mouseScale);
 		int adjustedMouseY = Mth.ceil(mouseY * mouseScale);
 
-		InventoryScreen.renderEntityInInventoryFollowsMouse(
+		InventoryScreen.extractEntityInInventoryFollowsMouse(
 				guiGraphics, startX, startY, endX, endY, (int) 20, -1, adjustedMouseX, adjustedMouseY, livingEntity);
 
 		poseStack.popMatrix();
