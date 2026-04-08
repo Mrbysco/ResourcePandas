@@ -13,8 +13,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -26,15 +26,15 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.animal.Panda;
+import net.minecraft.world.entity.animal.panda.Panda;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -98,7 +98,7 @@ public class ResourcePandaEntity extends Panda {
 		return this.entityData.get(RESOURCE_DATA);
 	}
 
-	public void setResourceDataById(ResourceLocation variant) {
+	public void setResourceDataById(Identifier variant) {
 		RecipeHolder<PandaRecipe> recipeHolder = getRecipeFromID(variant);
 		if (recipeHolder != null) {
 			this.setResourceData(ResourceData.fromRecipe(recipeHolder));
@@ -201,11 +201,11 @@ public class ResourcePandaEntity extends Panda {
 
 	public RecipeHolder<PandaRecipe> getPandaRecipe() {
 		if (this.level() instanceof ServerLevel serverLevel && getResourceData().isPresent()) {
-			ResourceLocation dataId = getResourceData().get().id();
-			if (cachedRecipe == null || !cachedRecipe.id().location().equals(dataId)) {
+			Identifier dataId = getResourceData().get().id();
+			if (cachedRecipe == null || !cachedRecipe.id().identifier().equals(dataId)) {
 				Collection<RecipeHolder<PandaRecipe>> recipes = serverLevel.recipeAccess().recipeMap().byType(PandaRecipes.PANDA_RECIPE_TYPE.get());
 				for (RecipeHolder<PandaRecipe> recipe : recipes) {
-					if (recipe.id().location().equals(dataId)) {
+					if (recipe.id().identifier().equals(dataId)) {
 						return this.cachedRecipe = recipe;
 					}
 				}
@@ -222,11 +222,11 @@ public class ResourcePandaEntity extends Panda {
 	 * @param id The ID of the panda
 	 * @return The recipe holder of the panda (null if client-side)
 	 */
-	private RecipeHolder<PandaRecipe> getRecipeFromID(ResourceLocation id) {
+	private RecipeHolder<PandaRecipe> getRecipeFromID(Identifier id) {
 		if (this.level() instanceof ServerLevel serverLevel) {
 			Collection<RecipeHolder<PandaRecipe>> recipes = serverLevel.recipeAccess().recipeMap().byType(PandaRecipes.PANDA_RECIPE_TYPE.get());
 			for (RecipeHolder<PandaRecipe> recipe : recipes) {
-				if (recipe.id().location().equals(id)) {
+				if (recipe.id().identifier().equals(id)) {
 					return recipe;
 				}
 			}
@@ -247,7 +247,7 @@ public class ResourcePandaEntity extends Panda {
 		}
 
 		if (this.level() instanceof ServerLevel serverLevel && this.random.nextFloat() <= getPandaRecipe().value().getChance() &&
-				serverLevel.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+				serverLevel.getGameRules().get(GameRules.MOB_DROPS)) {
 			PandaRecipe recipe = getPandaRecipe().value();
 			this.spawnAtLocation(serverLevel, recipe.getResult());
 		}
@@ -267,7 +267,7 @@ public class ResourcePandaEntity extends Panda {
 			panda.setDeltaMovement(panda.getDeltaMovement().add((double) (-Mth.sin(f1) * 0.2F), 0.0D, (double) (Mth.cos(f1) * 0.2F)));
 		}
 
-		panda.hasImpulse = true;
+		panda.needsSync = true;
 		CommonHooks.onLivingJump(panda);
 	}
 

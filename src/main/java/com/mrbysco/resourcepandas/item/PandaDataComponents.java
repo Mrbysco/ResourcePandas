@@ -5,7 +5,7 @@ import com.mrbysco.resourcepandas.Reference;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -18,9 +18,9 @@ public class PandaDataComponents {
 					.persistent(Codec.INT)
 					.networkSynchronized(ByteBufCodecs.INT)
 					.build());
-	public static final Supplier<DataComponentType<ResourceLocation>> RESOURCE_TYPE = DATA_COMPONENT_TYPES.register("resource_type", () ->
-			DataComponentType.<ResourceLocation>builder()
-					.persistent(ResourceLocation.CODEC)
-					.networkSynchronized(ResourceLocation.STREAM_CODEC)
+	public static final Supplier<DataComponentType<Identifier>> RESOURCE_TYPE = DATA_COMPONENT_TYPES.register("resource_type", () ->
+			DataComponentType.<Identifier>builder()
+					.persistent(Identifier.CODEC)
+					.networkSynchronized(Identifier.STREAM_CODEC)
 					.build());
 }

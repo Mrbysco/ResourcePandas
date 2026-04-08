@@ -6,11 +6,11 @@ import com.mrbysco.resourcepandas.entity.ResourcePandaEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.PandaRenderer;
 import net.minecraft.client.renderer.entity.state.PandaRenderState;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.animal.Panda;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.animal.panda.Panda;
 
 public class ResourcePandaRenderer extends PandaRenderer {
-	private static final ResourceLocation OVERLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/entity/panda/resource_overlay.png");
+	private static final Identifier OVERLAY_TEXTURE = Identifier.fromNamespaceAndPath(Reference.MOD_ID, "textures/entity/panda/resource_overlay.png");
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public ResourcePandaRenderer(EntityRendererProvider.Context context) {

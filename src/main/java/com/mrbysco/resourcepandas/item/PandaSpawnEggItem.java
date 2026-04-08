@@ -6,7 +6,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -40,7 +40,7 @@ public class PandaSpawnEggItem extends SpawnEggItem {
 			return InteractionResult.SUCCESS;
 		} else {
 			ItemStack itemstack = context.getItemInHand();
-			ResourceLocation resourceType = itemstack.get(PandaDataComponents.RESOURCE_TYPE);
+			Identifier resourceType = itemstack.get(PandaDataComponents.RESOURCE_TYPE);
 			BlockPos blockpos = context.getClickedPos();
 			Direction direction = context.getClickedFace();
 			BlockState blockstate = level.getBlockState(blockpos);
@@ -83,7 +83,7 @@ public class PandaSpawnEggItem extends SpawnEggItem {
 		}
 	}
 
-	public void initializePanda(ResourcePandaEntity panda, @Nullable ResourceLocation resourceType) {
+	public void initializePanda(ResourcePandaEntity panda, @Nullable Identifier resourceType) {
 		if (resourceType != null) {
 			panda.setResourceDataById(resourceType);
 		}
@@ -91,7 +91,7 @@ public class PandaSpawnEggItem extends SpawnEggItem {
 
 	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> consumer, TooltipFlag flag) {
-		ResourceLocation resourceType = stack.get(PandaDataComponents.RESOURCE_TYPE);
+		Identifier resourceType = stack.get(PandaDataComponents.RESOURCE_TYPE);
 		if (resourceType != null) {
 			String resource = flag.hasShiftDown() ? resourceType.toString() : resourceType.getPath();
 			consumer.accept(Component.literal("Resource: ").withStyle(ChatFormatting.YELLOW).append(Component.literal(resource).withStyle(ChatFormatting.GOLD)));

@@ -23,7 +23,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
@@ -36,7 +36,7 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 	private final IDrawableStatic icon;
 
 	public PandaCategory(IGuiHelper guiHelper) {
-		ResourceLocation iconLocation = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/panda_icon.png");
+		Identifier iconLocation = Identifier.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/panda_icon.png");
 		this.icon = guiHelper.createDrawable(iconLocation, 0, 0, 16, 16);
 	}
 
@@ -85,13 +85,16 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 		final Matrix3x2fStack poseStack = guiGraphics.pose();
 
 		// Draw entity
-		ResourcePandaEntity resourcePanda = ClientHelper.getResourcePanda(recipeHolder.id().location());
+		ResourcePandaEntity resourcePanda = ClientHelper.getResourcePanda(recipeHolder.id().identifier());
 		if (resourcePanda != null) {
 			Vector2f position = new Vector2f(56, 36);
 			position = poseStack.transformPosition(position);
 			int x = Math.round(position.x);
 			int y = Math.round(position.y);
-			RenderHelper.renderEntity(guiGraphics, x, y, 20.0F, 38 - mouseX, 80 - mouseY, resourcePanda);
+			RenderHelper.renderEntity(guiGraphics, x, y, 25.0F,
+					mouseX + 12,
+					mouseY - 12,
+					resourcePanda);
 		}
 
 		// Draw entity name

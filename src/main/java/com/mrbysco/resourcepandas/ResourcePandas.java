@@ -70,7 +70,7 @@ public class ResourcePandas {
 				for (RecipeHolder<PandaRecipe> recipe : server.getRecipeManager().recipeMap().byType(PandaRecipes.PANDA_RECIPE_TYPE.get())) {
 					ItemStack storageItem = new ItemStack(PandaRegistry.RESOURCE_PANDA_SPAWN_EGG.get());
 					storageItem.set(PandaDataComponents.COLOR, Integer.decode("0x" + recipe.value().getHexColor().replaceFirst("#", "")));
-					storageItem.set(PandaDataComponents.RESOURCE_TYPE, recipe.id().location());
+					storageItem.set(PandaDataComponents.RESOURCE_TYPE, recipe.id().identifier());
 					event.accept(storageItem);
 				}
 			}

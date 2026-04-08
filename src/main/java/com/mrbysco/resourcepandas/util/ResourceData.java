@@ -7,17 +7,17 @@ import com.mrbysco.resourcepandas.recipe.PandaRecipe;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
-public record ResourceData(ResourceLocation id, String name, String hexColor,
+public record ResourceData(Identifier id, String name, String hexColor,
                            float alpha, float chance) {
 	public static final ResourceData MISSING = new ResourceData(
 			Reference.modLoc("missing"), "Missing", "#ffd79a", 1.0F, 2.0F);
 
 	public static final Codec<ResourceData> CODEC = RecordCodecBuilder.create(inst ->
 			inst.group(
-							ResourceLocation.CODEC.fieldOf("id").forGetter(ResourceData::id),
+							Identifier.CODEC.fieldOf("id").forGetter(ResourceData::id),
 							Codec.STRING.fieldOf("name").forGetter(ResourceData::name),
 							Codec.STRING.fieldOf("hexColor").forGetter(ResourceData::hexColor),
 							Codec.FLOAT.fieldOf("alpha").forGetter(ResourceData::alpha),
@@ -25,7 +25,7 @@ public record ResourceData(ResourceLocation id, String name, String hexColor,
 					.apply(inst, ResourceData::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ResourceData> STREAM_CODEC = StreamCodec.composite(
-			ResourceLocation.STREAM_CODEC,
+			Identifier.STREAM_CODEC,
 			spoilTimer -> spoilTimer.id,
 			ByteBufCodecs.STRING_UTF8,
 			spoilTimer -> spoilTimer.name,
@@ -40,6 +40,6 @@ public record ResourceData(ResourceLocation id, String name, String hexColor,
 
 	public static ResourceData fromRecipe(RecipeHolder<PandaRecipe> recipeHolder) {
 		PandaRecipe recipe = recipeHolder.value();
-		return new ResourceData(recipeHolder.id().location(), recipe.getName(), recipe.getHexColor(), recipe.getAlpha(), recipe.getChance());
+		return new ResourceData(recipeHolder.id().identifier(), recipe.getName(), recipe.getHexColor(), recipe.getAlpha(), recipe.getChance());
 	}
 }

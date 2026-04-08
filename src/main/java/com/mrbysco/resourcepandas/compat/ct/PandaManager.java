@@ -8,7 +8,7 @@
 //import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 //import com.mrbysco.resourcepandas.recipe.PandaRecipe;
 //import com.mrbysco.resourcepandas.recipe.PandaRecipes;
-//import net.minecraft.resources.ResourceLocation;
+//import net.minecraft.resources.Identifier;
 //import net.minecraft.world.item.ItemStack;
 //import net.minecraft.world.item.crafting.Ingredient;
 //import net.minecraft.world.item.crafting.RecipeHolder;
@@ -27,7 +27,7 @@
 //
 //	@Method
 //	public void addPanda(String id, String name, IIngredient input, IItemStack output, String hex, float alpha, float chance) {
-//		final ResourceLocation location = ResourceLocation.fromNamespaceAndPath("crafttweaker", id);
+//		final Identifier location = Identifier.fromNamespaceAndPath("crafttweaker", id);
 //		final Ingredient ingredient = input.asVanillaIngredient();
 //		final ItemStack resultItemStack = output.getInternal();
 //		final PandaRecipe recipe = new PandaRecipe(name, ingredient, resultItemStack, hex, alpha, chance);
@@ -37,7 +37,7 @@
 //
 //	@Method
 //	public void addPanda(String id, String name, IIngredient input, IItemStack output, String hex, float chance) {
-//		final ResourceLocation location = ResourceLocation.fromNamespaceAndPath("crafttweaker", id);
+//		final Identifier location = Identifier.fromNamespaceAndPath("crafttweaker", id);
 //		final Ingredient ingredient = input.asVanillaIngredient();
 //		final ItemStack resultItemStack = output.getInternal();
 //		final PandaRecipe recipe = new PandaRecipe(name, ingredient, resultItemStack, hex, 1.0F, chance);

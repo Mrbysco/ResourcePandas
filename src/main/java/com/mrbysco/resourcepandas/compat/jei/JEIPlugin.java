@@ -14,7 +14,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
-	private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "jei_plugin");
+	private static final Identifier UID = Identifier.fromNamespaceAndPath(Reference.MOD_ID, "jei_plugin");
 
 	public static final IRecipeType<RecipeHolder<PandaRecipe>> PANDA_RECIPE_TYPE = createPandaType();
 
@@ -30,7 +30,7 @@ public class JEIPlugin implements IModPlugin {
 	private IRecipeCategory<RecipeHolder<PandaRecipe>> pandaCategory;
 
 	@Override
-	public ResourceLocation getPluginUid() {
+	public Identifier getPluginUid() {
 		return UID;
 	}
 
