@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityProcessor;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntitySpawnRequest;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 
@@ -23,7 +24,7 @@ public class ClientHelper {
 			Minecraft mc = Minecraft.getInstance();
 			Level level = mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null ? mc.getSingleplayerServer().getAllLevels().iterator().next() : mc.level;
 			if (level != null) {
-				ResourcePandaEntity resourcePanda = (ResourcePandaEntity) EntityType.loadEntityRecursive(nbt, level, EntitySpawnReason.LOAD, EntityProcessor.NOP);
+				ResourcePandaEntity resourcePanda = (ResourcePandaEntity) EntityType.loadEntityRecursive(nbt, level, new EntitySpawnRequest(EntitySpawnReason.LOAD, false), EntityProcessor.NOP);
 				if (resourcePanda != null) {
 					resourcePanda.setId(-1);
 					resourcePanda.setResourceDataById(id);

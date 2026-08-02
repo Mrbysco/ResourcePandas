@@ -1,7 +1,7 @@
 package com.mrbysco.resourcepandas.datagen.builder;
 
 import com.mrbysco.resourcepandas.recipe.PandaRecipe;
-import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.triggers.Criterion;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeBuilder;

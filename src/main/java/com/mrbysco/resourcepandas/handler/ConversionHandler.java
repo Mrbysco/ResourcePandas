@@ -9,7 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.ConversionParams;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.animal.panda.Panda;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -22,12 +22,12 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 public class ConversionHandler {
 
 	@SubscribeEvent
-	public void interactEvent(PlayerInteractEvent.EntityInteractSpecific event) {
+	public void interactEvent(PlayerInteractEvent.EntityInteract event) {
 		Level level = event.getLevel();
 		if (level instanceof ServerLevel serverLevel) {
 			ItemStack heldStack = event.getItemStack();
 			Entity target = event.getTarget();
-			if (target.getType() == EntityType.PANDA && target instanceof Panda panda) {
+			if (target.getType() == EntityTypes.PANDA && target instanceof Panda panda) {
 				SingleRecipeInput inventory = new SingleRecipeInput(heldStack);
 				RecipeHolder<PandaRecipe> recipe = serverLevel.recipeAccess().getRecipeFor(PandaRecipes.PANDA_RECIPE_TYPE.get(), inventory, level).orElse(null);
 				if (recipe != null) {
