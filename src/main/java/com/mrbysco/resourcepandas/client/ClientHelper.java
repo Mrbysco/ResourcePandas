@@ -25,6 +25,7 @@ public class ClientHelper {
 			if (level != null) {
 				ResourcePandaEntity resourcePanda = (ResourcePandaEntity) EntityType.loadEntityRecursive(nbt, level, EntitySpawnReason.LOAD, EntityProcessor.NOP);
 				if (resourcePanda != null) {
+					resourcePanda.setId(-1);
 					resourcePanda.setResourceDataById(id);
 					resourcePanda.setTransformed(true);
 					return resourcePanda;
