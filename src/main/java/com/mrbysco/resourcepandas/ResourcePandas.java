@@ -64,7 +64,7 @@ public class ResourcePandas {
 	}
 
 	public void addTabContents(BuildCreativeModeTabContentsEvent event) {
-		if (event.getTabKey() == PandaRegistry.SPAWN_EGGS.getKey()) {
+		if (event.getTabKey().equals(PandaRegistry.SPAWN_EGGS.unwrapKey().orElseThrow())) {
 			MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 			if (server != null) {
 				for (RecipeHolder<PandaRecipe> recipe : server.getRecipeManager().recipeMap().byType(PandaRecipes.PANDA_RECIPE_TYPE.get())) {

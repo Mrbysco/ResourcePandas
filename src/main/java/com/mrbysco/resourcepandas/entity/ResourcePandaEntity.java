@@ -27,7 +27,6 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.panda.Panda;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
@@ -41,6 +40,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -70,14 +70,14 @@ public class ResourcePandaEntity extends Panda {
 	}
 
 	@Override
-	protected void defineSynchedData(SynchedEntityData.Builder builder) {
+	protected void defineSynchedData(SynchedEntityData.@NonNull Builder builder) {
 		super.defineSynchedData(builder);
 		builder.define(RESOURCE_DATA, Optional.empty());
 		builder.define(TRANSFORMED, false);
 	}
 
 	@Override
-	public Component getName() {
+	public @NonNull Component getName() {
 		return !this.hasCustomName() ? Component.literal(String.format("%s", this.getResourceName())).append(super.getName()) : super.getName();
 	}
 
@@ -147,7 +147,7 @@ public class ResourcePandaEntity extends Panda {
 		this.setHiddenGene(Gene.WEAK);
 
 		if (!this.isSilent()) {
-			this.level().levelEvent((Player) null, 1040, this.blockPosition(), 0);
+			this.level().levelEvent(null, 1040, this.blockPosition(), 0);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class ResourcePandaEntity extends Panda {
 	}
 
 	@Override
-	public boolean isFood(ItemStack stack) {
+	public boolean isFood(@NonNull ItemStack stack) {
 		return false;
 	}
 
@@ -179,7 +179,7 @@ public class ResourcePandaEntity extends Panda {
 	}
 
 	@Override
-	protected void addAdditionalSaveData(ValueOutput output) {
+	protected void addAdditionalSaveData(@NonNull ValueOutput output) {
 		super.addAdditionalSaveData(output);
 		if (this.getResourceData().isPresent()) {
 			output.store("resource_data", ResourceData.CODEC, this.getResourceData().get());
@@ -188,7 +188,7 @@ public class ResourcePandaEntity extends Panda {
 	}
 
 	@Override
-	public void readAdditionalSaveData(ValueInput input) {
+	public void readAdditionalSaveData(@NonNull ValueInput input) {
 		super.readAdditionalSaveData(input);
 
 		Optional<ResourceData> resourceData = input.read("resource_data", ResourceData.CODEC);
@@ -262,10 +262,10 @@ public class ResourcePandaEntity extends Panda {
 		}
 
 		Vec3 vector3d = panda.getDeltaMovement();
-		panda.setDeltaMovement(vector3d.x, (double) f, vector3d.z);
+		panda.setDeltaMovement(vector3d.x, f, vector3d.z);
 		if (panda.isSprinting()) {
 			float f1 = panda.getYRot() * ((float) Math.PI / 180F);
-			panda.setDeltaMovement(panda.getDeltaMovement().add((double) (-Mth.sin(f1) * 0.2F), 0.0D, (double) (Mth.cos(f1) * 0.2F)));
+			panda.setDeltaMovement(panda.getDeltaMovement().add(-Mth.sin(f1) * 0.2F, 0.0D, Mth.cos(f1) * 0.2F));
 		}
 
 		panda.needsSync = true;
@@ -284,7 +284,7 @@ public class ResourcePandaEntity extends Panda {
 
 	@Nullable
 	@Override
-	public SpawnGroupData finalizeSpawn(ServerLevelAccessor levelAccessor, DifficultyInstance difficultyIn, EntitySpawnReason reason, @Nullable SpawnGroupData spawnDataIn) {
+	public SpawnGroupData finalizeSpawn(@NonNull ServerLevelAccessor levelAccessor, @NonNull DifficultyInstance difficultyIn, @NonNull EntitySpawnReason reason, @Nullable SpawnGroupData spawnDataIn) {
 		SpawnGroupData entityData = super.finalizeSpawn(levelAccessor, difficultyIn, reason, spawnDataIn);
 		this.setMainGene(Gene.WEAK);
 		this.setHiddenGene(Gene.WEAK);

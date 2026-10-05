@@ -18,6 +18,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class PandaRecipe implements Recipe<SingleRecipeInput> {
 	public static final MapCodec<PandaRecipe> CODEC = RecordCodecBuilder.mapCodec(
@@ -81,7 +82,7 @@ public class PandaRecipe implements Recipe<SingleRecipeInput> {
 	}
 
 	@Override
-	public String group() {
+	public @NonNull String group() {
 		return "";
 	}
 

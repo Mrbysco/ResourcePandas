@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.state.PandaRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import org.jspecify.annotations.NonNull;
 
 public class ResourceLayer<S extends PandaRenderState, M extends EntityModel<? super S>> extends RenderLayer<S, M> {
 	private final Identifier overlayLocation;
@@ -25,7 +26,7 @@ public class ResourceLayer<S extends PandaRenderState, M extends EntityModel<? s
 	}
 
 	@Override
-	public void submit(PoseStack poseStack, SubmitNodeCollector nodeCollector, int packedLight, PandaRenderState renderState, float xRoy, float yRot) {
+	public void submit(@NonNull PoseStack poseStack, @NonNull SubmitNodeCollector nodeCollector, int packedLight, @NonNull PandaRenderState renderState, float xRoy, float yRot) {
 		if (renderState instanceof ResourcePandaRenderState resourceState && resourceState.isConverted) {
 			int color = ARGB.color(resourceState.alpha, resourceState.getColor());
 			this.model.setupAnim(renderState);
@@ -40,8 +41,7 @@ public class ResourceLayer<S extends PandaRenderState, M extends EntityModel<? s
 							renderState.lightCoords,
 							-1,
 							null,
-							renderState.outlineColor,
-							null
+							renderState.outlineColor
 					);
 				}
 			} else {

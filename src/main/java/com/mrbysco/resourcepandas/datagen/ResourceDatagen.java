@@ -4,24 +4,27 @@ import com.mrbysco.resourcepandas.Reference;
 import com.mrbysco.resourcepandas.client.ResourceColor;
 import com.mrbysco.resourcepandas.datagen.builder.ResourceRecipeBuilder;
 import com.mrbysco.resourcepandas.registry.PandaRegistry;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.HolderGetter;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.MultiRegistryBootstrap;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,18 +32,18 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.Set;
 
 @EventBusSubscriber
 public class ResourceDatagen {
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent.Client event) {
-		DataGenerator generator = event.getGenerator();
-		PackOutput packOutput = generator.getPackOutput();
+		event.createProvider(ResourceModelProvider::new);
 
-		generator.addProvider(true, new ResourceModelProvider(packOutput));
-		generator.addProvider(true, new ResourceRecipeProvider.Runner(packOutput, event.getLookupProvider()));
+		RegistrySetBuilder registryBuilder = new RegistrySetBuilder().add(ResourceRecipeProvider.create());
+		event.createReloadableRegistryObjects(registryBuilder, Set.of(Reference.MOD_ID));
 	}
 
 	public static class ResourceModelProvider extends ModelProvider {
@@ -67,9 +70,9 @@ public class ResourceDatagen {
 	public static class ResourceRecipeProvider extends RecipeProvider {
 		private final HolderGetter<Item> items;
 
-		public ResourceRecipeProvider(HolderLookup.Provider provider, RecipeOutput recipeOutput) {
-			super(provider, recipeOutput);
-			this.items = provider.lookupOrThrow(Registries.ITEM);
+		public ResourceRecipeProvider(BootstrapContext<Recipe<?>> recipeOutput, BootstrapContext<Advancement> advancementOutput) {
+			super(recipeOutput, advancementOutput);
+			this.items = recipeOutput.lookup(Registries.ITEM);
 		}
 
 		@Override
@@ -119,24 +122,22 @@ public class ResourceDatagen {
 			return ResourceRecipeBuilder.resource(this.items, input, output, count);
 		}
 
-		protected Ingredient tag(TagKey<Item> tag) {
+		protected @NonNull Ingredient tag(@NonNull TagKey<Item> tag) {
 			return Ingredient.of(this.items.getOrThrow(tag));
 		}
 
-		public static class Runner extends RecipeProvider.Runner {
-			public Runner(PackOutput output, CompletableFuture<Provider> completableFuture) {
-				super(output, completableFuture);
-			}
+		public static MultiRegistryBootstrap create() {
+			return new MultiRegistryBootstrap() {
+				@Override
+				public @NonNull Set<ResourceKey<? extends Registry<?>>> requestedRegistries() {
+					return Set.of(Registries.RECIPE, Registries.ADVANCEMENT);
+				}
 
-			@Override
-			protected RecipeProvider createRecipeProvider(HolderLookup.Provider provider, RecipeOutput recipeOutput) {
-				return new ResourceRecipeProvider(provider, recipeOutput);
-			}
-
-			@Override
-			public String getName() {
-				return "Resource Pandas Recipes";
-			}
+				@Override
+				public void run(@NonNull BootstrapGetter registries) {
+					new ResourceRecipeProvider(registries.get(Registries.RECIPE), registries.get(Registries.ADVANCEMENT)).buildRecipes();
+				}
+			};
 		}
 	}
 }

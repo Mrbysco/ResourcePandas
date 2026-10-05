@@ -28,6 +28,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2f;
+import org.jspecify.annotations.NonNull;
 
 public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>> {
 	protected static final int X_FIRST_ITEM = 0;
@@ -41,12 +42,12 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 	}
 
 	@Override
-	public IRecipeType<RecipeHolder<PandaRecipe>> getRecipeType() {
+	public @NonNull IRecipeType<RecipeHolder<PandaRecipe>> getRecipeType() {
 		return JEIPlugin.PANDA_RECIPE_TYPE;
 	}
 
 	@Override
-	public Component getTitle() {
+	public @NonNull Component getTitle() {
 		return Component.translatable("resourcepandas.pandas.title");
 	}
 
@@ -66,7 +67,7 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<PandaRecipe> recipeHolder, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<PandaRecipe> recipeHolder, @NonNull IFocusGroup focuses) {
 		PandaRecipe recipe = recipeHolder.value();
 
 		builder.addSlot(RecipeIngredientRole.INPUT, X_FIRST_ITEM, Y_ITEM_DISTANCE)
@@ -79,7 +80,7 @@ public class PandaCategory implements IRecipeCategory<RecipeHolder<PandaRecipe>>
 	}
 
 	@Override
-	public void draw(RecipeHolder<PandaRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
+	public void draw(RecipeHolder<PandaRecipe> recipeHolder, @NonNull IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 		PandaRecipe recipe = recipeHolder.value();
 
 		final Matrix3x2fStack poseStack = guiGraphics.pose();

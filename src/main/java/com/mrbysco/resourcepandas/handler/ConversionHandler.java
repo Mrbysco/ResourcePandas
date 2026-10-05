@@ -17,6 +17,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public class ConversionHandler {
@@ -33,10 +34,7 @@ public class ConversionHandler {
 				if (recipe != null) {
 //					ResourcePandas.LOGGER.info(recipe.getId());
 					ResourcePandaEntity resourcePanda = panda.convertTo(PandaRegistry.RESOURCE_PANDA.get(),
-							ConversionParams.single(panda, true, true), cow -> {
-								net.neoforged.neoforge.event.EventHooks.onLivingConvert(panda, cow);
-
-							});
+							ConversionParams.single(panda, true, true), cow -> EventHooks.onLivingConvert(panda, cow));
 					if (resourcePanda != null) {
 						resourcePanda.setResourceDataById(recipe.id().identifier());
 						resourcePanda.startTransforming(300);

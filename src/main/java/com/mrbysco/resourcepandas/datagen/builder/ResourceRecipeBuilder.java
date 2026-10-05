@@ -14,6 +14,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 public class ResourceRecipeBuilder implements RecipeBuilder {
 	private final HolderGetter<Item> items;
@@ -48,22 +49,22 @@ public class ResourceRecipeBuilder implements RecipeBuilder {
 		return this;
 	}
 
-	public ResourceRecipeBuilder alpha(@Nullable float alpha) {
+	public ResourceRecipeBuilder alpha(float alpha) {
 		this.alpha = alpha;
 		return this;
 	}
 
-	public ResourceRecipeBuilder chance(@Nullable float chance) {
+	public ResourceRecipeBuilder chance(float chance) {
 		this.chance = chance;
 		return this;
 	}
 
 	@Override
-	public RecipeBuilder unlockedBy(String s, Criterion<?> criterion) {
+	public @NonNull RecipeBuilder unlockedBy(@NonNull String s, @NonNull Criterion<?> criterion) {
 		return this;
 	}
 
-	public ResourceRecipeBuilder group(@Nullable String s) {
+	public @NonNull ResourceRecipeBuilder group(@Nullable String s) {
 		return this;
 	}
 
@@ -71,7 +72,7 @@ public class ResourceRecipeBuilder implements RecipeBuilder {
 		return RecipeBuilder.getDefaultRecipeId(this.result);
 	}
 
-	public void save(RecipeOutput recipeOutput, ResourceKey<Recipe<?>> resourceKey) {
+	public void save(RecipeOutput recipeOutput, @NonNull ResourceKey<Recipe<?>> resourceKey) {
 		PandaRecipe recipe = new PandaRecipe(this.name, this.ingredient, this.result, this.hexColor, this.alpha, this.chance);
 		recipeOutput.accept(resourceKey, recipe, null);
 	}

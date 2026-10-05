@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
@@ -30,7 +31,7 @@ public class JEIPlugin implements IModPlugin {
 	private IRecipeCategory<RecipeHolder<PandaRecipe>> pandaCategory;
 
 	@Override
-	public Identifier getPluginUid() {
+	public @NonNull Identifier getPluginUid() {
 		return UID;
 	}
 
