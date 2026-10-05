@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -90,7 +91,7 @@ public class PandaSpawnEggItem extends SpawnEggItem {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> consumer, TooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, @NonNull TooltipContext context, @NonNull TooltipDisplay display, @NonNull Consumer<Component> consumer, @NonNull TooltipFlag flag) {
 		Identifier resourceType = stack.get(PandaDataComponents.RESOURCE_TYPE);
 		if (resourceType != null) {
 			String resource = flag.hasShiftDown() ? resourceType.toString() : resourceType.getPath();

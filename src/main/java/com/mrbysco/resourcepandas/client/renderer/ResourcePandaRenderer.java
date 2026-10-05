@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.PandaRenderer;
 import net.minecraft.client.renderer.entity.state.PandaRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.animal.panda.Panda;
+import org.jspecify.annotations.NonNull;
 
 public class ResourcePandaRenderer extends PandaRenderer {
 	private static final Identifier OVERLAY_TEXTURE = Identifier.fromNamespaceAndPath(Reference.MOD_ID, "textures/entity/panda/resource_overlay.png");
@@ -19,12 +20,12 @@ public class ResourcePandaRenderer extends PandaRenderer {
 	}
 
 	@Override
-	public PandaRenderState createRenderState() {
+	public @NonNull PandaRenderState createRenderState() {
 		return new ResourcePandaRenderState();
 	}
 
 	@Override
-	public void extractRenderState(Panda panda, PandaRenderState renderState, float partialTick) {
+	public void extractRenderState(@NonNull Panda panda, @NonNull PandaRenderState renderState, float partialTick) {
 		super.extractRenderState(panda, renderState, partialTick);
 		if (panda instanceof ResourcePandaEntity resourcePanda && renderState instanceof ResourcePandaRenderState resourceState) {
 			resourceState.isConverting = !resourcePanda.isTransformed();
@@ -37,7 +38,7 @@ public class ResourcePandaRenderer extends PandaRenderer {
 	}
 
 	@Override
-	protected boolean isShaking(PandaRenderState renderState) {
+	protected boolean isShaking(@NonNull PandaRenderState renderState) {
 		if (renderState instanceof ResourcePandaRenderState resourceState)
 			return renderState.isFullyFrozen || resourceState.isConverting;
 		else

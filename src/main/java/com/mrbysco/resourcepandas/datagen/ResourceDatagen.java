@@ -29,6 +29,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -119,7 +120,7 @@ public class ResourceDatagen {
 			return ResourceRecipeBuilder.resource(this.items, input, output, count);
 		}
 
-		protected Ingredient tag(TagKey<Item> tag) {
+		protected @NonNull Ingredient tag(@NonNull TagKey<Item> tag) {
 			return Ingredient.of(this.items.getOrThrow(tag));
 		}
 

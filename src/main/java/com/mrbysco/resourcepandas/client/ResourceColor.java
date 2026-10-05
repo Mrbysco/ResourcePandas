@@ -10,6 +10,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 public record ResourceColor(int defaultColor) implements ItemTintSource {
 	public static final MapCodec<ResourceColor> MAP_CODEC = RecordCodecBuilder.mapCodec(
@@ -27,7 +28,7 @@ public record ResourceColor(int defaultColor) implements ItemTintSource {
 	}
 
 	@Override
-	public MapCodec<ResourceColor> type() {
+	public @NonNull MapCodec<ResourceColor> type() {
 		return MAP_CODEC;
 	}
 }
