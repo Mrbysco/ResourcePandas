@@ -7,8 +7,6 @@ plugins {
     id 'com.modrinth.minotaur' version "2.+"
 }
 
-version = "${version}"
-group = "${mod_group}"
 base {
     archivesName = "${mod_archive_name}-${mc_version}"
 }
@@ -131,9 +129,7 @@ jar {
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
-            groupId project.group
-            artifactId base.archivesName.get()
-            version project.version
+            artifactId = base.archivesName.get()
             from components.java
         }
     }
@@ -175,10 +171,10 @@ if (System.getenv().MODRINTH_KEY) {
         projectId = project.modrinth_id
         versionType = "beta"
         versionName = "${mod_name} ${mc_version}"
-        versionNumber = project.version
+        versionNumber = project.version.toString()
         uploadFile = jar
         changelog = file("$project.rootDir/changelog.md").text
-        gameVersions = ["${mc_version}"]
+        gameVersions = [mc_version]
         loaders = ["neoforge"]
 
         dependencies {

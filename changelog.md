@@ -1,1 +1,1 @@
-* Update to 26.2
+* Initial update to 26.3 (Thanks to [AzureDoom](https://github.com/Mrbysco/ResourcePandas/issues/4))
