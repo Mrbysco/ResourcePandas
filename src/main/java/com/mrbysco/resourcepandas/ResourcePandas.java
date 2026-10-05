@@ -28,7 +28,6 @@ public class ResourcePandas {
 	public static final Logger LOGGER = LogManager.getLogger();
 
 	public ResourcePandas(IEventBus eventBus, Dist dist) {
-
 		PandaDataComponents.DATA_COMPONENT_TYPES.register(eventBus);
 		PandaRegistry.ITEMS.register(eventBus);
 		PandaRegistry.ENTITY_DATA_SERIALIZER.register(eventBus);

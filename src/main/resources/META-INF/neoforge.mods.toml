@@ -16,12 +16,12 @@ A snotty goldmine
 [[dependencies.resourcepandas]]
 modId="minecraft"
 type="REQUIRED"
-versionRange="[26.2,)"
+versionRange="[26.3,)"
 ordering="NONE"
 side="BOTH"
 [[dependencies.resourcepandas]]
 modId="neoforge"
 type="REQUIRED"
-versionRange="[26.2.0.43-beta-alpha,)"
+versionRange="[26.3.0.37-beta,)"
 ordering="NONE"
 side="BOTH"
